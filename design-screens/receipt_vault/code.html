@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RupeeSafe - Receipt Vault</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#3e4946",
+                    "on-primary": "#ffffff",
+                    "on-background": "#1b1c1c",
+                    "surface-container-highest": "#e3e2e2",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-primary-fixed": "#00201b",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "primary": "#004f45",
+                    "on-tertiary-fixed": "#3a0b01",
+                    "on-tertiary-container": "#ffcabb",
+                    "on-primary-container": "#94e5d5",
+                    "on-tertiary-fixed-variant": "#723522",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#703321",
+                    "secondary-fixed": "#e2e2e2",
+                    "surface-variant": "#e3e2e2",
+                    "surface-bright": "#fbf9f9",
+                    "surface-container": "#efeded",
+                    "tertiary-fixed-dim": "#ffb59f",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-container": "#dcdddc",
+                    "on-secondary-container": "#5f6161",
+                    "surface-tint": "#046b5e",
+                    "inverse-primary": "#84d5c5",
+                    "background": "#fbf9f9",
+                    "outline-variant": "#bec9c5",
+                    "primary-container": "#00695c",
+                    "outline": "#6e7976",
+                    "surface-container-low": "#f5f3f3",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dbdad9",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#005046",
+                    "inverse-surface": "#303031",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#a0f2e1",
+                    "secondary": "#5d5f5e",
+                    "inverse-on-surface": "#f2f0f0",
+                    "primary-fixed-dim": "#84d5c5",
+                    "tertiary-fixed": "#ffdbd1",
+                    "surface": "#fbf9f9",
+                    "on-surface": "#1b1c1c",
+                    "tertiary-container": "#8d4a36",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#c6c7c6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "base": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "container-margin": "20px",
+                    "sm": "12px",
+                    "gutter": "12px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "currency-display": ["Inter"],
+                    "body-base": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "currency-display": ["32px", {"lineHeight": "1", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-base antialiased">
+<!-- TopAppBar -->
+<!-- Applying JSON styles, omitting border per 'Shell Border Ban' rule -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md shadow-sm font-inter tracking-tight text-slate-900 dark:text-slate-100">
+<button class="flex items-center justify-center w-10 h-10 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200 text-teal-800 dark:text-teal-400">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-lg font-bold text-teal-800 dark:text-teal-400">
+            RupeeSafe
+        </div>
+<button class="flex items-center justify-center w-10 h-10 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200 text-teal-800 dark:text-teal-400 overflow-hidden">
+<img alt="User profile" class="w-8 h-8 rounded-full object-cover" data-alt="A small, circular profile picture of a professional individual against a clean, light background. The lighting is soft and natural, emphasizing a trustworthy and approachable demeanor. This serves as a user avatar in a modern financial application, adhering to a minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj-22YKKPKz71pGoDmxr5eNDtDtTn_8Wsfd_QqFvCNkjFUdShUza9Gt_-tvxeIHWzPQLEYwLZKvkd48vAeAWyApNMfGwzsmu2_TpbbmyNPU9IRJbfLrU8cGNw-ojxdRVNeG6dNpsF9w1358NYXZHqvJCXPFPrC-RFvMkbu8gAD3Q6mzHk7sM9079Usig2j2d5BrpWvrhaT9kJTR0r5EAUTqiKDIXwE5n1FAGvcKlzfxbq6CMJry4S3LCHzVZxa74KYtnUuGZy5fRxQ"/>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-md pb-32 flex flex-col gap-lg">
+<!-- Header & Filters -->
+<section class="flex flex-col gap-md">
+<h1 class="font-headline-md text-headline-md text-on-background">Receipt Vault</h1>
+<div class="flex gap-sm overflow-x-auto no-scrollbar pb-xs">
+<button class="px-md py-2 bg-primary-container text-on-primary-container rounded-full font-label-caps text-label-caps whitespace-nowrap active:scale-95 transition-transform">
+                    All Categories
+                </button>
+<button class="px-md py-2 bg-surface-variant text-on-surface-variant rounded-full font-label-caps text-label-caps whitespace-nowrap active:scale-95 transition-transform">
+                    This Month
+                </button>
+<button class="px-md py-2 bg-surface-variant text-on-surface-variant rounded-full font-label-caps text-label-caps whitespace-nowrap active:scale-95 transition-transform flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">filter_list</span>
+                    More
+                </button>
+</div>
+</section>
+<!-- Receipt Grid (Bento/Glassmorphism style) -->
+<section class="grid grid-cols-2 gap-sm">
+<!-- Receipt Card 1 -->
+<article class="relative group rounded-xl overflow-hidden bg-surface border border-outline-variant shadow-sm aspect-[3/4] cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A close-up view of a printed restaurant receipt resting on a clean, light-colored wooden table. The lighting is bright and evenly diffused, highlighting the text and figures on the paper. The overall scene conveys a sense of organized financial tracking within a minimalist, modern context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7NnTRk4F6I5jvhrxH7vR2GdSZMu4jBY0MxnlflJ2_ge1GD9PV8Pm1mlAuTtY7BAnCPeN0I6h-OAzRyFSfBWeG5AlLCHc0dP3GfrSN0JqQUP0ajVUbuG7nLz1oTY6youa4ucyeK1n6HxqeJ3dtlZet-HCoQNKCJx_Osh3lJavR1h7YYVYeshMdRSVUxWEUkvWrerrXFvhXe8Y0RhhuSG5FpyVACj-RcUcRchpsoOZDtlwwQvFZfgvJnVFQoKw-mkodUa3KWuA7-sf-"/>
+<!-- Glassmorphism Label -->
+<div class="absolute bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md p-sm border-t border-outline-variant/50 flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface truncate">Swiggy</span>
+<span class="font-label-caps text-label-caps text-primary">₹450</span>
+</div>
+</article>
+<!-- Receipt Card 2 -->
+<article class="relative group rounded-xl overflow-hidden bg-surface border border-outline-variant shadow-sm aspect-[3/4] cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A crisp, neatly folded retail store receipt placed against a neutral, soft-toned background. The image is brightly lit, ensuring the transaction details are subtly visible but not overly intrusive. The visual aesthetic aligns with a clean, trustworthy financial management application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMNT0aAdm5iP1vQhUyiMi4w126geIlYK912rB5LHSGfmukBzA7BBe8hK9fsg9RYbTvWx7vqUYeXUsZ2u9ZcaOHKTEYBbNE9oye4oO8Po0ILJlY39xnVK3JSXPBcHa_WsyLOr2H4dptqTfL1KrxWoXSM4GkTlvTdvUX_O__0oZKCiOVGUcTfgMQfWKl-2GU5aOfxX2hxemNk7P5so3L-uvLlog1jC-SK2Zea-eLC-iB12pZYezfv7vvGBZVcpk1j0Dg7iIL5LgC6R0E"/>
+<div class="absolute bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md p-sm border-t border-outline-variant/50 flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface truncate">Reliance Fresh</span>
+<span class="font-label-caps text-label-caps text-primary">₹1,200</span>
+</div>
+</article>
+<!-- Receipt Card 3 -->
+<article class="relative group rounded-xl overflow-hidden bg-surface border border-outline-variant shadow-sm aspect-[3/4] cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="An abstract, stylized depiction of a digital receipt or invoice displayed on a smooth, modern surface. The color palette utilizes cool whites and soft greys, creating a serene and orderly atmosphere. The lighting is high-key, emphasizing clarity and transparency in financial record-keeping." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsWmbPFYVFjUvou1d3i83gvkwCwwZpDzwwICq5QRRyyF87kHlBoMEjugW3z1FRq7ckU2OmqECHljuuboGG7yi6vxNA5WImG3Y5jwTmjOSsWzpwr0wgBzIDb4-ybLdTB-0lx1wZSZJipPVrWPxp0wKStXYEu45fKqFWz0zHaZsGGoFj4yFGHPYftOvg0LCxzk_cysPi-kGjNTSOhOHG5vianWQrREjo4V4yOuWivD0i5hf-bLgmERTiU0A9VZ_3dk5UZMUa-DJCrhhv"/>
+<div class="absolute bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md p-sm border-t border-outline-variant/50 flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface truncate">Uber</span>
+<span class="font-label-caps text-label-caps text-primary">₹230</span>
+</div>
+</article>
+<!-- Receipt Card 4 -->
+<article class="relative group rounded-xl overflow-hidden bg-surface border border-outline-variant shadow-sm aspect-[3/4] cursor-pointer">
+<div class="absolute inset-0 bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-4xl">receipt</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md p-sm border-t border-outline-variant/50 flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface truncate">Amazon India</span>
+<span class="font-label-caps text-label-caps text-primary">₹899</span>
+</div>
+</article>
+<!-- Receipt Card 5 -->
+<article class="relative group rounded-xl overflow-hidden bg-surface border border-outline-variant shadow-sm aspect-[3/4] cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="A blurred background image of a receipt, suggesting a previously captured document. The focus is soft, allowing overlaid text to remain legible. The overall tone is consistent with a light-mode, minimalist interface designed for calm financial oversight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCToSQ8XKjSzrsWHu75knFM97fadnYVAbajXsta5MM18f9yj3aI5hW46Twhcd5KbYb698pffsYwH0I2iO3iV7Pl_IwVnolZxKyLDTPRlo1G4XBVNxu8-KZxEH3oKH_QOYgLjPL6jxpziP7G-hLyb4-HcA-WyOTFr23tOB9eqeAP1YYPtzJSxxMeqka_XZSbPBM0Mhy5TfZrV5kWmg5VernwRORpVeqxnyze7OlU18S7aovdbGMHWhdR99yc9Ldzfix-vlip_Kjjcgju"/>
+<div class="absolute bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md p-sm border-t border-outline-variant/50 flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface truncate">Starbucks</span>
+<span class="font-label-caps text-label-caps text-primary">₹350</span>
+</div>
+</article>
+</section>
+</main>
+<!-- Floating Action Button for Adding Receipt -->
+<button class="fixed bottom-28 right-container-margin bg-primary text-on-primary rounded-xl px-md py-sm shadow-lg flex items-center gap-xs z-40 active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">add_a_photo</span>
+<span class="font-label-caps text-label-caps">Add Receipt</span>
+</button>
+<!-- BottomNavBar -->
+<!-- Applying JSON styles, omitting border per 'Shell Border Ban' rule. Active tab is "History" semantically. -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-20 z-50 flex justify-around items-center px-4 pb-safe bg-white dark:bg-slate-900 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="text-[11px] font-medium font-inter">Home</span>
+</button>
+<!-- Active Item -->
+<button class="flex flex-col items-center justify-center text-teal-800 dark:text-teal-300 font-bold hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="text-[11px] font-medium font-inter">History</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16">
+<span class="material-symbols-outlined mb-1">add_circle</span>
+<span class="text-[11px] font-medium font-inter">Add</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span class="text-[11px] font-medium font-inter">Budgets</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="text-[11px] font-medium font-inter">Settings</span>
+</button>
+</nav>
+</body></html>

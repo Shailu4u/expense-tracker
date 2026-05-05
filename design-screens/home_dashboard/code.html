@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>RupeeSafe - Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#3e4946",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1b1c1c",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#00201b",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "primary": "#004f45",
+                        "on-tertiary-fixed": "#3a0b01",
+                        "on-tertiary-container": "#ffcabb",
+                        "on-primary-container": "#94e5d5",
+                        "on-tertiary-fixed-variant": "#723522",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#703321",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-variant": "#e3e2e2",
+                        "surface-bright": "#fbf9f9",
+                        "surface-container": "#efeded",
+                        "tertiary-fixed-dim": "#ffb59f",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-container": "#dcdddc",
+                        "on-secondary-container": "#5f6161",
+                        "surface-tint": "#046b5e",
+                        "inverse-primary": "#84d5c5",
+                        "background": "#fbf9f9",
+                        "outline-variant": "#bec9c5",
+                        "primary-container": "#00695c",
+                        "outline": "#6e7976",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dbdad9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#005046",
+                        "inverse-surface": "#303031",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#a0f2e1",
+                        "secondary": "#5d5f5e",
+                        "inverse-on-surface": "#f2f0f0",
+                        "primary-fixed-dim": "#84d5c5",
+                        "tertiary-fixed": "#ffdbd1",
+                        "surface": "#fbf9f9",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-container": "#8d4a36",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c7c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "container-margin": "20px",
+                        "sm": "12px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "currency-display": ["Inter"],
+                        "body-base": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "currency-display": ["32px", { "lineHeight": "1", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-base min-h-screen flex flex-col pb-[100px] antialiased">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<button aria-label="Menu" class="w-10 h-10 flex items-center justify-center text-teal-800 dark:text-teal-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="text-lg font-bold text-teal-800 dark:text-teal-400 font-inter tracking-tight text-slate-900 dark:text-slate-100">RupeeSafe</h1>
+<button aria-label="User profile" class="w-10 h-10 flex items-center justify-center text-teal-800 dark:text-teal-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow w-full max-w-lg mx-auto px-container-margin pt-lg space-y-xl">
+<!-- Hero Spending Area (Bento Top) -->
+<section class="flex flex-col items-center justify-center space-y-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">This Month</p>
+<div class="flex flex-col items-center">
+<h2 class="font-currency-display text-currency-display text-on-background tracking-tight">₹18,450.00</h2>
+<div class="flex items-center space-x-xs mt-xs text-primary bg-primary-container/10 px-sm py-xs rounded-full">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+<span class="font-body-sm text-body-sm font-medium">8% lower than last month</span>
+</div>
+</div>
+</section>
+<!-- Budget Progress -->
+<section class="bg-surface-container-low p-md rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/30">
+<div class="flex justify-between items-end mb-sm">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Monthly Budget</p>
+<p class="font-body-sm text-body-sm font-medium text-on-background">₹18,450 <span class="text-on-surface-variant font-normal">of ₹25,000 spent</span></p>
+</div>
+<div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 73.8%;"></div>
+</div>
+</section>
+<!-- Quick Add Chips -->
+<section>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-sm">Quick Add</h3>
+<div class="flex gap-sm overflow-x-auto hide-scrollbar pb-xs">
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">local_cafe</span>
+<span>Tea</span>
+</button>
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">local_gas_station</span>
+<span>Fuel</span>
+</button>
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">fastfood</span>
+<span>Swiggy</span>
+</button>
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">restaurant</span>
+<span>Zomato</span>
+</button>
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">directions_car</span>
+<span>Auto</span>
+</button>
+<button class="shrink-0 bg-surface text-on-surface border border-outline-variant/50 px-md py-sm rounded-full font-body-sm text-body-sm font-medium flex items-center space-x-xs active:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px] text-primary">home</span>
+<span>Rent</span>
+</button>
+</div>
+</section>
+<!-- Bento Grid: Categories & Insights -->
+<section class="grid grid-cols-2 gap-md">
+<!-- Category Cards -->
+<div class="col-span-1 flex flex-col gap-md">
+<div class="bg-surface p-md rounded-xl border border-outline-variant/30 flex flex-col justify-between shadow-[0_2px_10px_rgba(0,0,0,0.01)] min-h-[100px]">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Groceries</p>
+<div class="w-full flex items-center gap-sm mt-auto pt-sm">
+<div class="h-1.5 flex-grow bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 60%;"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-background">60%</span>
+</div>
+</div>
+<div class="bg-surface p-md rounded-xl border border-outline-variant/30 flex flex-col justify-between shadow-[0_2px_10px_rgba(0,0,0,0.01)] min-h-[100px]">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Eating Out</p>
+<div class="w-full flex items-center gap-sm mt-auto pt-sm">
+<div class="h-1.5 flex-grow bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container" style="width: 40%;"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-background">40%</span>
+</div>
+</div>
+</div>
+<!-- Insight Card -->
+<div class="col-span-1 bg-primary-container text-on-primary-container p-md rounded-xl flex flex-col justify-between shadow-[0_4px_20px_rgba(0,105,92,0.15)] relative overflow-hidden">
+<div class="absolute top-0 right-0 p-sm opacity-20">
+<span class="material-symbols-outlined text-[48px]">lightbulb</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-on-primary-container/20 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-[16px] text-on-primary-container">insights</span>
+</div>
+<p class="font-body-sm text-body-sm font-medium leading-relaxed">
+                    Dining out is your top expense this week.
+                </p>
+</div>
+</section>
+<!-- Upcoming & Recent (Asymmetric layout) -->
+<section class="space-y-lg">
+<!-- Recurring Alert -->
+<div class="bg-tertiary-container/10 border border-tertiary-container/30 p-sm rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">event_repeat</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-background">Electricity Bill</p>
+<p class="font-label-caps text-[10px] text-tertiary uppercase tracking-wider">Due in 2 days</p>
+</div>
+</div>
+<button class="font-label-caps text-label-caps text-primary uppercase hover:underline">Pay</button>
+</div>
+<!-- Recent List -->
+<div>
+<div class="flex justify-between items-end mb-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Recent</h3>
+<button class="font-body-sm text-body-sm text-primary">See all</button>
+</div>
+<div class="space-y-xs bg-surface p-sm rounded-xl border border-outline-variant/30">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">shopping_basket</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-background">Blinkit</p>
+<p class="font-label-caps text-[11px] text-on-surface-variant">Groceries</p>
+</div>
+</div>
+<p class="font-body-base text-body-base font-medium text-on-background">-₹450</p>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[20px]">local_taxi</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-background">Uber</p>
+<p class="font-label-caps text-[11px] text-on-surface-variant">Transport</p>
+</div>
+</div>
+<p class="font-body-base text-body-base font-medium text-on-background">-₹120</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom spacing for fixed nav -->
+<div class="h-8"></div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 z-50 flex justify-around items-center px-4 pb-safe bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] md:hidden">
+<!-- Home (Active) -->
+<button class="flex flex-col items-center justify-center w-16 h-full text-teal-800 dark:text-teal-300 font-bold active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[11px] font-medium font-inter">Home</span>
+</button>
+<!-- History -->
+<button class="flex flex-col items-center justify-center w-16 h-full text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span class="text-[11px] font-medium font-inter">History</span>
+</button>
+<!-- Add (Primary Action Center) -->
+<div class="relative w-16 h-full flex justify-center">
+<button class="absolute -top-6 flex items-center justify-center w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0_8px_16px_rgba(0,105,92,0.3)] hover:scale-105 active:scale-95 transition-all duration-200 border-4 border-background">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<span class="text-[11px] font-medium font-inter absolute bottom-2 text-slate-400 dark:text-slate-500">Add</span>
+</div>
+<!-- Budgets -->
+<button class="flex flex-col items-center justify-center w-16 h-full text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="text-[11px] font-medium font-inter">Budgets</span>
+</button>
+<!-- Settings -->
+<button class="flex flex-col items-center justify-center w-16 h-full text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-[11px] font-medium font-inter">Settings</span>
+</button>
+</nav>
+</body></html>

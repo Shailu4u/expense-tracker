@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "RupeeSafe",
+    "slug": "rupeesafe",
+    "scheme": "rupeesafe",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#fbf9f9",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rupeesafe.app"
+    },
+    "android": {
+      "package": "com.rupeesafe.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#fbf9f9"
+      },
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "VIBRATE",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to attach receipts.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera to capture receipts."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#00695c"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

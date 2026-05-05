@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Transaction Detail - RupeeSafe</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#3e4946",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1b1c1c",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#00201b",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "primary": "#004f45",
+                        "on-tertiary-fixed": "#3a0b01",
+                        "on-tertiary-container": "#ffcabb",
+                        "on-primary-container": "#94e5d5",
+                        "on-tertiary-fixed-variant": "#723522",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#703321",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-variant": "#e3e2e2",
+                        "surface-bright": "#fbf9f9",
+                        "surface-container": "#efeded",
+                        "tertiary-fixed-dim": "#ffb59f",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-container": "#dcdddc",
+                        "on-secondary-container": "#5f6161",
+                        "surface-tint": "#046b5e",
+                        "inverse-primary": "#84d5c5",
+                        "background": "#fbf9f9",
+                        "outline-variant": "#bec9c5",
+                        "primary-container": "#00695c",
+                        "outline": "#6e7976",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dbdad9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#005046",
+                        "inverse-surface": "#303031",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#a0f2e1",
+                        "secondary": "#5d5f5e",
+                        "inverse-on-surface": "#f2f0f0",
+                        "primary-fixed-dim": "#84d5c5",
+                        "tertiary-fixed": "#ffdbd1",
+                        "surface": "#fbf9f9",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-container": "#8d4a36",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c7c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "container-margin": "20px",
+                        "sm": "12px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "currency-display": ["Inter"],
+                        "body-base": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "currency-display": ["32px", { "lineHeight": "1", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-base text-body-base antialiased min-h-screen flex flex-col mx-auto max-w-md relative shadow-2xl shadow-black/5 bg-background">
+<!-- Contextual Header (Nav Shell Suppressed per rules for Detail/Task screens) -->
+<header class="flex justify-between items-center px-4 h-16 sticky top-0 z-50 bg-background/90 backdrop-blur-md">
+<button aria-label="Go back" class="text-on-surface-variant hover:bg-surface-variant/50 w-10 h-10 flex items-center justify-center rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface">Details</h1>
+<button aria-label="Share" class="text-on-surface-variant hover:bg-surface-variant/50 w-10 h-10 flex items-center justify-center rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">ios_share</span>
+</button>
+</header>
+<!-- Main Scrollable Content -->
+<main class="flex-1 px-4 py-6 flex flex-col gap-lg overflow-y-auto">
+<!-- Hero Section: Amount & Merchant -->
+<section class="flex flex-col items-center gap-xs mt-2 text-center">
+<div class="w-20 h-20 rounded-full bg-surface-container-lowest flex items-center justify-center mb-2 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-surface-variant/50">
+<img alt="Swiggy Merchant Icon" class="w-full h-full object-cover" data-alt="A close up shot of a bright orange food delivery package sitting on a pristine, modern white marble countertop. The lighting is soft and natural, creating a clean and highly professional aesthetic. The image acts as an abstract placeholder for a merchant logo within a minimalist financial application light mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnqOomEHwpq5ZxKyUQ2pJQMGPAploxTyar2ZnhsISw2Se-GYJea5__ZuENmWZrhjtsimAsPa2xx3pocFPgPi3uz1Yf4OdLT6V8YhT1WV2oZOEHYsmin6qaiKIfZk7fvtJ2NKUJSDNSaQA1kkzvEmnroq_-gNeq8VZ8P7j6aKtH46hGQzXj4nUJALgT-FVBX4xlvnpglG8tlna0Ye6SrqCIEFRmkDUyiC2hSXyYMiBn_E3tT8CpcodaSq8bwIT9B_NIt5rj6DZW7s6V"/>
+</div>
+<p class="font-body-base text-body-base text-on-surface-variant mb-1">Swiggy</p>
+<h2 class="font-currency-display text-currency-display text-on-surface tracking-tight">₹450.00</h2>
+<div class="mt-4 px-4 py-1.5 bg-surface-container-high rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,79,69,0.4)]"></span>
+<span class="font-label-caps text-label-caps text-on-surface">Cleared</span>
+</div>
+</section>
+<!-- Transaction Details Bento Box -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col gap-sm">
+<div class="flex justify-between items-center py-3 border-b border-surface-container/50">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+<span class="font-body-sm text-body-sm text-outline">Date</span>
+</div>
+<span class="font-body-base text-body-base text-on-surface font-medium text-right">12 Oct, 8:30 PM</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-surface-container/50">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+<span class="font-body-sm text-body-sm text-outline">Category</span>
+</div>
+<span class="font-body-base text-body-base text-on-surface font-medium text-right">Eating Out</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-surface-container/50">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+<span class="font-body-sm text-body-sm text-outline">Payment</span>
+</div>
+<span class="font-body-base text-body-base text-on-surface font-medium text-right">UPI</span>
+</div>
+<div class="flex justify-between items-center py-3">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">sell</span>
+<span class="font-body-sm text-body-sm text-outline">Tag</span>
+</div>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container font-label-caps text-label-caps rounded-md">Work</span>
+</div>
+</section>
+<!-- Notes Section -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-2 text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[20px]">notes</span>
+<span class="font-body-sm text-body-sm text-outline">Notes</span>
+</div>
+<p class="font-body-base text-body-base text-on-surface pl-7">Lunch with team</p>
+</section>
+<!-- Receipt Preview Section -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">receipt</span>
+<span class="font-body-sm text-body-sm text-outline">Receipt preview</span>
+</div>
+</div>
+<div class="w-24 h-32 rounded-lg bg-surface-container border border-surface-variant overflow-hidden relative group cursor-pointer ml-7">
+<img alt="Receipt Thumbnail" class="w-full h-full object-cover opacity-90 transition-opacity" data-alt="A close-up, slightly out of focus view of a crumpled white paper receipt resting on a sleek, light grey wooden table surface. The lighting is bright and even, casting soft shadows that highlight the texture of the paper. The overall visual style is strictly minimalist, clean, and perfectly aligned with a premium financial application's light mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-ea5V_8ZgYuWlelypevLxcgiR7SUSHg2MwUUYnI2yezFsm-8Eo64GXkNWwIjgN4JypGHQNm-G2PCnkF9-OpWz_e3a4VvdSqrbBk5wL34XJMV0jGvY4hpK6x9O_cRxVPjL7siiGWHZ34nvHxLWyHCKaG6LkCDbyKr8KZTQ8xvySggl_uNoa64Om3JB-6NvQ9t1yah9QcCdzfcsZGAvqYHkUtHgGJqbjwwDLwCRoU91speVJbBaTQDXauDHHJbl5xiRCIABbSV3gGD9"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/5 transition-colors">
+<span class="material-symbols-outlined text-surface-container-lowest drop-shadow-md">zoom_in</span>
+</div>
+</div>
+</section>
+<!-- Bottom Spacer to ensure scroll clears fixed actions -->
+<div class="h-8"></div>
+</main>
+<!-- Fixed Bottom Actions Area -->
+<div class="sticky bottom-0 bg-background/95 backdrop-blur-md px-4 py-4 border-t border-surface-variant/50 pb-8">
+<div class="flex flex-col gap-sm">
+<!-- Primary Action -->
+<button class="w-full h-12 bg-primary-container text-on-primary flex items-center justify-center gap-2 rounded-lg font-label-caps text-label-caps tracking-wide hover:bg-primary-container/90 active:scale-95 transition-transform duration-200 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+                Edit
+            </button>
+<!-- Secondary Actions Row -->
+<div class="flex gap-sm">
+<button class="flex-1 h-12 bg-surface-container text-on-surface flex items-center justify-center gap-2 rounded-lg font-label-caps text-label-caps tracking-wide hover:bg-surface-container-high active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+                    Duplicate
+                </button>
+<button class="flex-1 h-12 bg-error-container/50 text-error flex items-center justify-center gap-2 rounded-lg font-label-caps text-label-caps tracking-wide hover:bg-error-container active:scale-95 transition-colors duration-200">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+                    Delete
+                </button>
+</div>
+</div>
+</div>
+</body></html>

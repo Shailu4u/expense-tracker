@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RupeeSafe - Transactions List</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Hide scrollbar for clean filter chip scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<!-- Tailwind Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#3e4946",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1b1c1c",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#00201b",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "primary": "#004f45",
+                        "on-tertiary-fixed": "#3a0b01",
+                        "on-tertiary-container": "#ffcabb",
+                        "on-primary-container": "#94e5d5",
+                        "on-tertiary-fixed-variant": "#723522",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#703321",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-variant": "#e3e2e2",
+                        "surface-bright": "#fbf9f9",
+                        "surface-container": "#efeded",
+                        "tertiary-fixed-dim": "#ffb59f",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-container": "#dcdddc",
+                        "on-secondary-container": "#5f6161",
+                        "surface-tint": "#046b5e",
+                        "inverse-primary": "#84d5c5",
+                        "background": "#fbf9f9",
+                        "outline-variant": "#bec9c5",
+                        "primary-container": "#00695c",
+                        "outline": "#6e7976",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dbdad9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#005046",
+                        "inverse-surface": "#303031",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#a0f2e1",
+                        "secondary": "#5d5f5e",
+                        "inverse-on-surface": "#f2f0f0",
+                        "primary-fixed-dim": "#84d5c5",
+                        "tertiary-fixed": "#ffdbd1",
+                        "surface": "#fbf9f9",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-container": "#8d4a36",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c7c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "container-margin": "20px",
+                        "sm": "12px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "currency-display": ["Inter", "sans-serif"],
+                        "body-base": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "currency-display": ["32px", { "lineHeight": "1", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest font-body-base text-body-base text-on-surface antialiased min-h-screen pb-[100px]">
+<!-- Shared Component: TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-teal-800 dark:text-teal-400">menu</span>
+</button>
+<div class="text-lg font-bold text-teal-800 dark:text-teal-400 font-inter tracking-tight text-slate-900 dark:text-slate-100">
+            RupeeSafe
+        </div>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full active:scale-95 transition-all duration-200">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover" data-alt="A minimalist and professional headshot of an individual, framed perfectly in a small circle. The lighting is soft, natural, and bright, fitting a calm corporate aesthetic. The background is a subtle, solid light grey to keep the focus on the user and maintain visual zen." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7scsV3BFhVMy5Drxex3DtTV8zj8bp_K_VYDgK3iM6d1kYDcXoe5oE5lsewr-WhW1ZUg0F-lx2-XF8r3v6FRMYcvEOQf0qgT_CA-PhOx4jj9kMpjiqfZ91JRjqT6TlLNu_AIr0B7Ea12b1qRpxyweiyKvjDeMvJ6BqqTWJ63XLpadtxNRCKw3HF__a-U88tphFOI3MeTfRIkp4JTXS4OXvXI3VVhG-a861473MD8xYT7i8wuqOxmfM3eQZ4CG2kUR5qp_Pb0sl2wrZ"/>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-2xl mx-auto flex flex-col">
+<!-- Sticky Search & Filter Section -->
+<div class="sticky top-16 z-40 bg-surface-container-lowest/95 backdrop-blur-sm pt-md pb-base px-container-margin border-b border-surface-variant/50">
+<!-- Search Bar -->
+<div class="relative w-full mb-sm">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full h-12 pl-xl pr-md rounded-xl bg-surface border border-outline-variant text-on-surface font-body-base text-body-base focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none placeholder:text-on-surface-variant/60" placeholder="Search transactions..." type="text"/>
+</div>
+<!-- Filter Chips -->
+<div class="flex items-center gap-base overflow-x-auto no-scrollbar py-xs">
+<button class="shrink-0 bg-primary-container text-on-primary-container font-label-caps text-label-caps px-md py-xs rounded-full border border-primary-container active:scale-95 transition-transform">
+                    All
+                </button>
+<button class="shrink-0 bg-surface text-on-surface-variant font-label-caps text-label-caps px-md py-xs rounded-full border border-outline-variant hover:bg-surface-variant active:scale-95 transition-transform">
+                    Expenses
+                </button>
+<button class="shrink-0 bg-surface text-on-surface-variant font-label-caps text-label-caps px-md py-xs rounded-full border border-outline-variant hover:bg-surface-variant active:scale-95 transition-transform">
+                    Income
+                </button>
+<button class="shrink-0 bg-surface text-on-surface-variant font-label-caps text-label-caps px-md py-xs rounded-full border border-outline-variant hover:bg-surface-variant active:scale-95 transition-transform">
+                    Cash
+                </button>
+<button class="shrink-0 bg-surface text-on-surface-variant font-label-caps text-label-caps px-md py-xs rounded-full border border-outline-variant hover:bg-surface-variant active:scale-95 transition-transform">
+                    UPI
+                </button>
+</div>
+</div>
+<!-- Transactions Container -->
+<div class="px-container-margin pt-lg flex flex-col gap-lg">
+<!-- Month Group (Bento-style card container) -->
+<div class="bg-surface rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-surface-container overflow-hidden">
+<!-- Group Header -->
+<div class="px-lg pt-lg pb-md flex justify-between items-end border-b border-surface-container-low">
+<h2 class="font-headline-md text-headline-md text-on-surface">October 2023</h2>
+<div class="font-label-caps text-label-caps text-on-surface-variant text-right">
+                        Total Spend<br/>
+<span class="font-body-base text-body-base text-on-surface font-semibold">₹1,949</span>
+</div>
+</div>
+<!-- Transaction Rows -->
+<div class="flex flex-col">
+<!-- Row: Swiggy -->
+<div class="flex items-center justify-between p-lg border-b border-surface-container-low hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base text-on-surface font-medium leading-tight mb-xs">Swiggy</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1">
+                                    Food <span class="w-1 h-1 rounded-full bg-outline-variant mx-1"></span> Oct 12
+                                </span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-base text-body-base text-on-surface font-semibold leading-tight mb-xs">₹450</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-label-caps text-[10px]">UPI</span>
+</div>
+</div>
+</div>
+<!-- Row: Local Kirana -->
+<div class="flex items-center justify-between p-lg border-b border-surface-container-low hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_mall</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base text-on-surface font-medium leading-tight mb-xs">Local Kirana</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1">
+                                    Groceries <span class="w-1 h-1 rounded-full bg-outline-variant mx-1"></span> Oct 11
+                                </span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-base text-body-base text-on-surface font-semibold leading-tight mb-xs">₹1,200</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">payments</span>
+<span class="font-label-caps text-[10px]">Cash</span>
+</div>
+</div>
+</div>
+<!-- Row: Jio Recharge -->
+<div class="flex items-center justify-between p-lg hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-inverse-primary/20 flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-base text-body-base text-on-surface font-medium leading-tight mb-xs">Jio Recharge</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1">
+                                    Bills <span class="w-1 h-1 rounded-full bg-outline-variant mx-1"></span> Oct 10
+                                </span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-body-base text-body-base text-on-surface font-semibold leading-tight mb-xs">₹299</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">qr_code_scanner</span>
+<span class="font-label-caps text-[10px]">UPI</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- End of Content spacer -->
+<div class="h-6"></div>
+</div>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 z-50 flex justify-around items-center px-4 pb-safe bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] hidden md:hidden flex">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-[11px] font-medium font-inter">Home</span>
+</a>
+<!-- History (Active) -->
+<a class="flex flex-col items-center justify-center text-teal-800 dark:text-teal-300 font-bold active:scale-90 transition-transform duration-150 w-16" href="#">
+<div class="bg-teal-50 dark:bg-teal-900/30 px-4 py-1 rounded-full mb-1 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+</div>
+<span class="text-[11px] font-medium font-inter">History</span>
+</a>
+<!-- Add (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">add_circle</span>
+<span class="text-[11px] font-medium font-inter">Add</span>
+</a>
+<!-- Budgets (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="text-[11px] font-medium font-inter">Budgets</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-200 active:scale-90 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-[11px] font-medium font-inter">Settings</span>
+</a>
+</nav>
+<!-- Ensure Web layout hides bottom nav and shows web nav if applicable (though JSON states full-width bottom docked, using responsive classes to manage) -->
+<style>
+        @media (min-width: 768px) {
+            nav.fixed.bottom-0 { display: none !important; }
+        }
+    </style>
+</body></html>
