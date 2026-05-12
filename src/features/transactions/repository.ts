@@ -153,6 +153,10 @@ export async function listInRange(opts: ListByMonthOpts): Promise<TransactionRow
 export async function update(id: string, patch: TransactionUpdate): Promise<TransactionRow> {
   const data = TransactionUpdateSchema.parse(patch);
   const db = await getDb();
+  // Capture pre-update state so we can propagate using the old merchant value.
+  const before = await findById(id);
+  if (!before) throw new Error('update: row missing');
+
   const sets: string[] = [];
   const args: (string | number | null)[] = [];
   const map: Record<string, string> = {
@@ -174,10 +178,58 @@ export async function update(id: string, patch: TransactionUpdate): Promise<Tran
       args.push(v as string | number | null);
     }
   }
+  const now = nowISO();
   sets.push('updated_at = ?');
-  args.push(nowISO());
+  args.push(now);
   args.push(id);
-  await db.runAsync(`UPDATE transactions SET ${sets.join(', ')} WHERE id = ?`, args);
+
+  const oldMerchant = before.merchant?.trim() ?? null;
+  const categoryChanged = data.categoryId !== undefined && data.categoryId !== before.categoryId;
+  const merchantChanged =
+    data.merchant !== undefined && (data.merchant ?? null) !== (before.merchant ?? null);
+
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(`UPDATE transactions SET ${sets.join(', ')} WHERE id = ?`, args);
+
+    // Propagate the category to every other live transaction with the same
+    // merchant + kind. Case-insensitive so "ZOMATO" and "Zomato" align.
+    if (categoryChanged && oldMerchant) {
+      await db.runAsync(
+        `UPDATE transactions
+         SET category_id = ?, updated_at = ?
+         WHERE LOWER(merchant) = LOWER(?)
+           AND kind = ?
+           AND id != ?
+           AND deleted_at IS NULL`,
+        [data.categoryId!, now, oldMerchant, before.kind, id],
+      );
+
+      // Remember the user's preference so future SMS auto-imports for this
+      // merchant default to this category instead of "Other".
+      await db.runAsync(
+        `INSERT INTO merchant_rules (id, merchant_pattern, category_id, hits)
+         VALUES (?, ?, ?, 1)
+         ON CONFLICT(merchant_pattern) DO UPDATE SET
+           category_id = excluded.category_id,
+           hits = merchant_rules.hits + 1`,
+        [newId(), oldMerchant.toLowerCase(), data.categoryId!],
+      );
+    }
+
+    // Propagate a merchant rename across every transaction that shared the
+    // old name, regardless of kind — they all become consistent.
+    if (merchantChanged && oldMerchant) {
+      await db.runAsync(
+        `UPDATE transactions
+         SET merchant = ?, updated_at = ?
+         WHERE LOWER(merchant) = LOWER(?)
+           AND id != ?
+           AND deleted_at IS NULL`,
+        [data.merchant ?? null, now, oldMerchant, id],
+      );
+    }
+  });
+
   const row = await findById(id);
   if (!row) throw new Error('update: row missing');
   return row;

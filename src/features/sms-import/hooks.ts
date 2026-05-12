@@ -8,6 +8,14 @@ export function usePendingSms() {
   });
 }
 
+export function useSmsForTransaction(txnId: string | undefined) {
+  return useQuery({
+    queryKey: ['sms', 'byTransactionId', txnId ?? '__none__'],
+    queryFn: () => (txnId ? SmsRepo.findByTransactionId(txnId) : Promise.resolve(null)),
+    enabled: !!txnId,
+  });
+}
+
 export function useImportSms() {
   const qc = useQueryClient();
   return useMutation({
@@ -16,11 +24,11 @@ export function useImportSms() {
   });
 }
 
-export function useAcceptSms() {
+export function useUpdateSmsCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, categoryId }: { id: string; categoryId: string }) =>
-      SmsRepo.accept(id, categoryId),
+      SmsRepo.updateCategory(id, categoryId),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['sms'] });
       void qc.invalidateQueries({ queryKey: ['transactions'] });
@@ -32,6 +40,9 @@ export function useRejectSms() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => SmsRepo.reject(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sms'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['sms'] });
+      void qc.invalidateQueries({ queryKey: ['transactions'] });
+    },
   });
 }

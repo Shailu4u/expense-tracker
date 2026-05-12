@@ -26,6 +26,26 @@ function loadModule(): SmsAndroidModule | null {
   }
 }
 
+type IncomingSms = { originatingAddress: string; body: string; timestamp: number };
+type SmsListenerSubscription = { remove: () => void };
+type SmsListenerModule = {
+  addListener: (handler: (m: IncomingSms) => void) => SmsListenerSubscription;
+};
+
+function loadListener(): SmsListenerModule | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require('react-native-android-sms-listener') as
+      | SmsListenerModule
+      | { default: SmsListenerModule };
+    return 'addListener' in mod
+      ? mod
+      : (mod as { default: SmsListenerModule }).default ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function checkPermission(): Promise<boolean> {
   const READ = 'android.permission.READ_SMS' as Parameters<typeof PermissionsAndroid.check>[0];
   return PermissionsAndroid.check(READ);
@@ -43,6 +63,20 @@ export async function requestPermission(): Promise<boolean> {
     granted[READ] === PermissionsAndroid.RESULTS.GRANTED &&
     granted[RECV] === PermissionsAndroid.RESULTS.GRANTED
   );
+}
+
+export function subscribeIncoming(handler: (rec: SmsRecord) => void): () => void {
+  const mod = loadListener();
+  if (!mod) return () => {};
+  const sub = mod.addListener((m) => {
+    handler({
+      id: String(m.timestamp),
+      sender: m.originatingAddress ?? '',
+      body: m.body ?? '',
+      receivedAt: new Date(m.timestamp).toISOString(),
+    });
+  });
+  return () => sub.remove();
 }
 
 export async function listRecent(sinceMs: number): Promise<SmsRecord[]> {

@@ -20,6 +20,7 @@ import {
   useTransaction,
   useRecentMerchants,
 } from '@/features/transactions/hooks';
+import { SmsSourceCard } from '@/features/sms-import/components/SmsSourceCard';
 import { rupeesToPaise } from '@/utils/money';
 import { nowISO, fromISO } from '@/utils/date';
 import type { PaymentMode, TransactionKind } from '@/types';
@@ -162,6 +163,8 @@ export default function AddOrEditTransaction() {
             multiline
           />
         </View>
+
+        {editingId && <SmsSourceCard transactionId={editingId} />}
 
         <View style={styles.section}>
           <ThemedText variant="bodySm" tone="muted">

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { Platform, View, StyleSheet, FlatList, Alert } from 'react-native';
 import { Screen, ThemedText, Card, Button, MoneyText, CategoryIcon, CategoryPicker } from '@/components';
 import { palette, spacing } from '@/theme/tokens';
 import * as SmsRepo from '../repository';
-import { usePendingSms, useImportSms, useAcceptSms, useRejectSms } from '../hooks';
+import { usePendingSms, useImportSms, useUpdateSmsCategory, useRejectSms } from '../hooks';
 import { useCategories } from '@/features/categories/hooks';
 import { fromISO } from '@/utils/date';
 
@@ -12,8 +12,6 @@ export function SmsImportScreen() {
   const [permission, setPermission] = useState<boolean | null>(null);
   const importMut = useImportSms();
   const { data: pending = [] } = usePendingSms();
-  const accept = useAcceptSms();
-  const reject = useRejectSms();
   const { data: categories = [] } = useCategories();
 
   useEffect(() => {
@@ -25,6 +23,13 @@ export function SmsImportScreen() {
       SmsRepo.checkPermission().then(setPermission);
     }
   }, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof pending)[number] }) => (
+      <ReviewCard item={item} categories={categories} />
+    ),
+    [categories],
+  );
 
   if (Platform.OS !== 'android' || supported === false) {
     return (
@@ -97,19 +102,12 @@ export function SmsImportScreen() {
         ListEmptyComponent={
           <Card style={{ marginHorizontal: spacing.containerMargin }}>
             <ThemedText variant="bodyBase" tone="muted">
-              No pending messages to review.
+              No SMS transactions to review. New ones will appear here automatically.
             </ThemedText>
           </Card>
         }
         contentContainerStyle={{ paddingBottom: spacing.xl }}
-        renderItem={({ item }) => (
-          <ReviewCard
-            item={item}
-            categories={categories}
-            onAccept={(catId) => accept.mutate({ id: item.id, categoryId: catId })}
-            onReject={() => reject.mutate(item.id)}
-          />
-        )}
+        renderItem={renderItem}
       />
     </Screen>
   );
@@ -122,15 +120,43 @@ interface Props {
       ? C[]
       : never
     : never;
-  onAccept: (categoryId: string) => void;
-  onReject: () => void;
 }
 
-function ReviewCard({ item, categories, onAccept, onReject }: Props) {
+const ReviewCard = memo(function ReviewCard({ item, categories }: Props) {
+  const updateCategory = useUpdateSmsCategory();
+  const reject = useRejectSms();
   const cats = (categories ?? []).filter((c) =>
     item.parsed.kind === 'income' ? c.kind !== 'expense' : c.kind !== 'income',
   );
-  const [categoryId, setCategoryId] = useState<string | null>(cats[0]?.id ?? null);
+  // Resolved selection from the underlying transaction. Falls back to
+  // "Other" when no transaction is linked or the linked category was hidden.
+  const resolvedCategoryId =
+    item.txnCategoryId && cats.some((c) => c.id === item.txnCategoryId)
+      ? item.txnCategoryId
+      : cats.find((c) => c.name === (item.parsed.kind === 'income' ? 'Other Income' : 'Other'))?.id ??
+        cats[0]?.id ??
+        null;
+  const [categoryId, setCategoryId] = useState<string | null>(resolvedCategoryId);
+
+  // Keep the picker in sync when another card's update propagates this
+  // transaction's category (same merchant + kind).
+  useEffect(() => {
+    setCategoryId(resolvedCategoryId);
+  }, [resolvedCategoryId]);
+
+  const handleChangeCategory = useCallback(
+    (id: string | null) => {
+      setCategoryId(id);
+      if (id && id !== resolvedCategoryId) {
+        updateCategory.mutate({ id: item.id, categoryId: id });
+      }
+    },
+    [updateCategory, item.id, resolvedCategoryId],
+  );
+
+  const handleReject = useCallback(() => {
+    reject.mutate(item.id);
+  }, [reject, item.id]);
 
   return (
     <Card style={styles.review}>
@@ -150,14 +176,13 @@ function ReviewCard({ item, categories, onAccept, onReject }: Props) {
         {item.body}
       </ThemedText>
       <ThemedText variant="labelCaps" tone="muted">CATEGORY</ThemedText>
-      <CategoryPicker categories={cats} value={categoryId} onChange={setCategoryId} />
+      <CategoryPicker categories={cats} value={categoryId} onChange={handleChangeCategory} />
       <View style={styles.reviewActions}>
-        <Button label="Reject" variant="ghost" onPress={onReject} />
-        <Button label="Accept" disabled={!categoryId} onPress={() => categoryId && onAccept(categoryId)} />
+        <Button label="Reject" variant="ghost" onPress={handleReject} />
       </View>
     </Card>
   );
-}
+});
 
 const styles = StyleSheet.create({
   header: { paddingHorizontal: spacing.containerMargin, paddingTop: spacing.lg, gap: spacing.xs },

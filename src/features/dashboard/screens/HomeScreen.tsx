@@ -85,7 +85,7 @@ export function HomeScreen() {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <Image
-              source={require('../../../../logo.png')}
+              source={require('../../../assets/logo.png')}
               style={{ width: 48, height: 48, resizeMode: 'contain' }}
             />
             <View style={{ gap: 2 }}>

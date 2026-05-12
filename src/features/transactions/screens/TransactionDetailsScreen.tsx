@@ -6,6 +6,7 @@ import { palette, radius, spacing } from '@/theme/tokens';
 import { useTransaction, useDeleteTransaction, useRestoreTransaction } from '../hooks';
 import { useCategory } from '@/features/categories/hooks';
 import { useReceiptsForTransaction, useAttachReceipt, useDeleteReceipt } from '@/features/receipts/hooks';
+import { SmsSourceCard } from '@/features/sms-import/components/SmsSourceCard';
 import { fromISO } from '@/utils/date';
 import { PAYMENT_MODE_LABELS } from '@/types';
 
@@ -72,6 +73,8 @@ export function TransactionDetailsScreen() {
         />
         <ThemedText variant="bodyBase">{txn.merchant?.trim() || cat?.name || 'Transaction'}</ThemedText>
       </View>
+
+      <SmsSourceCard transactionId={txn.id} />
 
       <Card style={styles.card}>
         <Row label="Date" value={fromISO(txn.occurredAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })} />

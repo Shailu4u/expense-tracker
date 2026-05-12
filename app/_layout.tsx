@@ -12,6 +12,7 @@ import { useLockStore } from '@/features/security/lockStore';
 import { configureChannel } from '@/services/notifications';
 import * as RecurringRepo from '@/features/recurring/repository';
 import { AppState } from 'react-native';
+import { useSmsAutoDetect } from '@/features/sms-import/auto-detect';
 
 export default function RootLayout() {
   const client = useMemo(
@@ -47,6 +48,8 @@ function RootGuard() {
   const isLocked = useLockStore((s) => s.isLocked);
   const router = useRouter();
   const segments = useSegments();
+
+  useSmsAutoDetect();
 
   useEffect(() => {
     void configureChannel();

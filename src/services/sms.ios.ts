@@ -14,3 +14,7 @@ export async function requestPermission(): Promise<boolean> {
 export async function listRecent(_sinceMs: number): Promise<SmsRecord[]> {
   return [];
 }
+
+export function subscribeIncoming(_handler: (rec: SmsRecord) => void): () => void {
+  return () => {};
+}
