@@ -40,6 +40,17 @@ export const palette = {
   onPrimaryFixedVariant: '#005046',
   background: '#fbf9f9',
   onBackground: '#1b1c1c',
+  backgroundAccent: '#f3fbf8',
+  surfaceElevated: '#fffefd',
+  surfaceOverlay: '#f8f6f5',
+  heroGradientStart: '#0f7668',
+  heroGradientMid: '#0b5f54',
+  heroGradientEnd: '#164e63',
+  heroGlowMint: '#8de4d2',
+  heroGlowPeach: '#ffd6c2',
+  tabSurface: '#fffaf7',
+  tabBorder: '#d7e4df',
+  tabActive: '#e2f7f0',
   // Semantic, derived
   warningContainer: '#fff3cd',
   onWarningContainer: '#5c4400',
@@ -70,8 +81,8 @@ export const radius = {
 export const typography = {
   displayLg: { fontFamily: 'Inter', fontSize: 36, fontWeight: '700' as const, lineHeight: 43, letterSpacing: -0.72 },
   headlineMd: { fontFamily: 'Inter', fontSize: 24, fontWeight: '600' as const, lineHeight: 31 },
-  bodyBase: { fontFamily: 'Inter', fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  bodySm: { fontFamily: 'Inter', fontSize: 14, fontWeight: '400' as const, lineHeight: 20 },
+  bodyBase: { fontFamily: 'Inter', fontSize: 16, fontWeight: '400' as const, lineHeight: 25 },
+  bodySm: { fontFamily: 'Inter', fontSize: 14, fontWeight: '400' as const, lineHeight: 22 },
   labelCaps: { fontFamily: 'Inter', fontSize: 12, fontWeight: '600' as const, lineHeight: 14, letterSpacing: 0.6 },
   currencyDisplay: { fontFamily: 'Inter', fontSize: 32, fontWeight: '700' as const, lineHeight: 32 },
 } as const;
@@ -80,9 +91,9 @@ export const elevation = {
   card: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 20,
-    elevation: 1,
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 3,
   },
   fab: {
     shadowColor: '#000',

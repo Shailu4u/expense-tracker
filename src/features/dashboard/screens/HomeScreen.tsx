@@ -1,9 +1,18 @@
-import { useMemo } from 'react';
-import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View, StyleSheet, Pressable, ScrollView, Image, Modal } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Screen, ThemedText, Card, MoneyText, Button, CategoryIcon } from '@/components';
+import {
+  Screen,
+  ThemedText,
+  Card,
+  MoneyText,
+  Button,
+  CategoryIcon,
+  GradientPanel,
+} from '@/components';
 import { palette, radius, spacing } from '@/theme/tokens';
-import { monthRange } from '@/utils/date';
+import { budgetCycleRange } from '@/utils/date';
 import { formatINR } from '@/utils/money';
 import {
   useMonthSum,
@@ -13,14 +22,39 @@ import {
 import { useCategories } from '@/features/categories/hooks';
 import { TransactionItem } from '@/features/transactions/components/TransactionItem';
 import { useBudgetsForMonth } from '@/features/budgets/hooks';
+import { useSettings } from '@/features/security/hooks';
+
+const FILTER_OPTIONS = [
+  { label: 'This Month', value: 'month' },
+  { label: 'Last 1 Month', value: 'last_month' },
+  { label: 'Last 1 Week', value: 'last_week' },
+] as const;
+type FilterOption = (typeof FILTER_OPTIONS)[number]['value'];
 
 export function HomeScreen() {
   const router = useRouter();
-  const range = useMemo(() => monthRange(new Date()), []);
-  const monthLabel = useMemo(
-    () => new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
-    [],
-  );
+  const { data: settings } = useSettings();
+  const monthStartDay = settings?.monthStartDay ?? 1;
+
+  const [filter, setFilter] = useState<FilterOption>('month');
+
+  const range = useMemo(() => {
+    const now = new Date();
+    if (filter === 'last_week') {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 7);
+      return { start: start.toISOString(), end: now.toISOString() };
+    }
+    if (filter === 'last_month') {
+      const start = new Date(now);
+      start.setMonth(now.getMonth() - 1);
+      return { start: start.toISOString(), end: now.toISOString() };
+    }
+    return budgetCycleRange(now, monthStartDay);
+  }, [filter, monthStartDay]);
+
+  const [filterVisible, setFilterVisible] = useState(false);
+  const selectedFilterLabel = FILTER_OPTIONS.find((o) => o.value === filter)?.label;
 
   const { data: spent = 0 } = useMonthSum(range.start, range.end, 'expense');
   const { data: earned = 0 } = useMonthSum(range.start, range.end, 'income');
@@ -47,18 +81,79 @@ export function HomeScreen() {
 
   return (
     <Screen padded={false}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         <View style={styles.header}>
-          <ThemedText variant="labelCaps" tone="primary">RUPEESAFE</ThemedText>
-          <ThemedText variant="bodySm" tone="muted">
-            {monthLabel}
-          </ThemedText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Image
+              source={require('../../../../logo.png')}
+              style={{ width: 48, height: 48, resizeMode: 'contain' }}
+            />
+            <View style={{ gap: 2 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <ThemedText
+                  variant="labelCaps"
+                  style={{ fontSize: 18, letterSpacing: 1, fontWeight: 'bold' }}
+                >
+                  Rupee
+                </ThemedText>
+                <ThemedText
+                  variant="labelCaps"
+                  tone="primary"
+                  style={{ fontSize: 18, letterSpacing: 1, fontWeight: 'bold' }}
+                >
+                  Safe
+                </ThemedText>
+              </View>
+              <ThemedText variant="bodySm" tone="muted" style={{ fontSize: 14 }}>
+                Track.Save.Grow.
+              </ThemedText>
+            </View>
+          </View>
+          <Pressable
+            onPress={() => setFilterVisible(true)}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          >
+            <ThemedText variant="bodySm" tone="muted">
+              {selectedFilterLabel}
+            </ThemedText>
+            <MaterialIcons name="expand-more" size={16} color={palette.outline} />
+          </Pressable>
         </View>
 
-        <Card style={styles.heroCard}>
-          <ThemedText variant="labelCaps" tone="muted">SPENT THIS MONTH</ThemedText>
-          <MoneyText paise={spent} size="display" />
-          <ThemedText variant="bodySm" tone="muted">
+        <Modal visible={filterVisible} transparent animationType="fade">
+          <Pressable style={styles.modalOverlay} onPress={() => setFilterVisible(false)}>
+            <View style={styles.dropdownMenu}>
+              {FILTER_OPTIONS.map((o) => (
+                <Pressable
+                  key={o.value}
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setFilter(o.value);
+                    setFilterVisible(false);
+                  }}
+                >
+                  <ThemedText
+                    variant="bodyBase"
+                    style={{ color: o.value === filter ? palette.primary : palette.onBackground }}
+                  >
+                    {o.label}
+                  </ThemedText>
+                </Pressable>
+              ))}
+            </View>
+          </Pressable>
+        </Modal>
+
+        <GradientPanel style={styles.heroCard}>
+          <ThemedText variant="labelCaps" tone="inverse">
+            {filter === 'month'
+              ? 'SPENT THIS MONTH'
+              : filter === 'last_month'
+                ? 'SPENT LAST 1 MONTH'
+                : 'SPENT LAST 1 WEEK'}
+          </ThemedText>
+          <MoneyText paise={spent} size="display" style={{ color: palette.onPrimary }} />
+          <ThemedText variant="bodySm" tone="inverse">
             Earned {formatINR(earned)} · Net {formatINR(earned - spent)}
           </ThemedText>
 
@@ -71,17 +166,30 @@ export function HomeScreen() {
                     {
                       width: `${used * 100}%`,
                       backgroundColor:
-                        used >= 1 ? palette.error : used >= 0.8 ? palette.tertiary : palette.primary,
+                        used >= 1
+                          ? palette.error
+                          : used >= 0.8
+                            ? palette.heroGlowPeach
+                            : palette.heroGlowMint,
                     },
                   ]}
                 />
               </View>
               <View style={styles.budgetRow}>
-                <ThemedText variant="bodySm" tone="muted">
+                <ThemedText variant="bodySm" tone="inverse" style={{ flexShrink: 1 }}>
                   Budget {formatINR(overallBudget.amountPaise)}
                 </ThemedText>
-                <ThemedText variant="bodySm" tone={used >= 1 ? 'error' : 'muted'}>
-                  {used >= 1 ? `Over by ${formatINR(spent - overallBudget.amountPaise)}` : `${formatINR(remaining ?? 0)} left`}
+                <ThemedText
+                  variant="bodySm"
+                  style={{
+                    color: used >= 1 ? palette.errorContainer : palette.onPrimary,
+                    flexShrink: 1,
+                    textAlign: 'right',
+                  }}
+                >
+                  {used >= 1
+                    ? `Over by ${formatINR(spent - overallBudget.amountPaise)}`
+                    : `${formatINR(remaining ?? 0)} left`}
                 </ThemedText>
               </View>
             </View>
@@ -92,15 +200,20 @@ export function HomeScreen() {
               label="Add expense"
               onPress={() => router.push('/(tabs)/add')}
               fullWidth
+              variant="secondary"
             />
           </View>
-        </Card>
+        </GradientPanel>
 
         <View style={styles.sectionHead}>
-          <ThemedText variant="labelCaps" tone="muted">TOP CATEGORIES</ThemedText>
+          <ThemedText variant="labelCaps" tone="muted">
+            TOP CATEGORIES
+          </ThemedText>
           {catSums.length > 0 && (
             <Pressable onPress={() => router.push('/reports')}>
-              <ThemedText variant="labelCaps" tone="primary">SEE ALL</ThemedText>
+              <ThemedText variant="labelCaps" tone="primary">
+                SEE ALL
+              </ThemedText>
             </Pressable>
           )}
         </View>
@@ -118,7 +231,11 @@ export function HomeScreen() {
                 <View key={row.categoryId}>
                   {i > 0 && <View style={styles.sep} />}
                   <View style={styles.catRow}>
-                    <CategoryIcon icon={c?.icon ?? 'category'} color={c?.color ?? '#6E7976'} size={36} />
+                    <CategoryIcon
+                      icon={c?.icon ?? 'category'}
+                      color={c?.color ?? palette.outline}
+                      size={36}
+                    />
                     <View style={{ flex: 1 }}>
                       <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
                         {c?.name ?? 'Other'}
@@ -136,14 +253,20 @@ export function HomeScreen() {
         )}
 
         <View style={styles.sectionHead}>
-          <ThemedText variant="labelCaps" tone="muted">RECENT</ThemedText>
+          <ThemedText variant="labelCaps" tone="muted">
+            RECENT
+          </ThemedText>
           <Pressable onPress={() => router.push('/(tabs)/transactions')}>
-            <ThemedText variant="labelCaps" tone="primary">SEE ALL</ThemedText>
+            <ThemedText variant="labelCaps" tone="primary">
+              SEE ALL
+            </ThemedText>
           </Pressable>
         </View>
         {recents.length === 0 ? (
           <Card>
-            <ThemedText variant="bodyBase" tone="muted">No transactions yet — tap “Add expense” above.</ThemedText>
+            <ThemedText variant="bodyBase" tone="muted">
+              No transactions yet — tap “Add expense” above.
+            </ThemedText>
           </Card>
         ) : (
           <Card padded={false}>
@@ -161,13 +284,27 @@ export function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { paddingHorizontal: spacing.containerMargin, paddingBottom: spacing.xl, gap: spacing.md },
-  header: { paddingTop: spacing.lg, gap: 2 },
-  heroCard: { gap: spacing.sm },
+  scroll: {
+    paddingHorizontal: spacing.containerMargin,
+    paddingBottom: spacing.xl,
+    gap: spacing.md,
+  },
+  header: {
+    paddingTop: spacing.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  heroCard: { gap: spacing.sm, paddingHorizontal: spacing.md, backgroundColor: palette.primary },
   budgetBlock: { gap: spacing.xs, marginTop: spacing.sm },
-  budgetTrackBg: { height: 8, backgroundColor: palette.surfaceContainerHigh, borderRadius: radius.full, overflow: 'hidden' },
+  budgetTrackBg: {
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.24)',
+    borderRadius: radius.full,
+    overflow: 'hidden',
+  },
   budgetTrackFill: { height: 8, borderRadius: radius.full },
-  budgetRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  budgetRow: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 4 },
   heroActions: { paddingTop: spacing.sm },
   sectionHead: {
     flexDirection: 'row',
@@ -175,6 +312,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: spacing.sm,
   },
-  sep: { height: 1, backgroundColor: palette.outlineVariant, marginLeft: spacing.md + 36 + spacing.md },
-  catRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, minHeight: 56 },
+  sep: {
+    height: 1,
+    backgroundColor: palette.outlineVariant,
+    marginLeft: spacing.md + 36 + spacing.md,
+  },
+  catRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    minHeight: 56,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 80,
+    paddingRight: spacing.containerMargin,
+  },
+  dropdownMenu: {
+    backgroundColor: palette.surface,
+    borderRadius: radius.md,
+    padding: spacing.xs,
+    minWidth: 160,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  dropdownItem: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
 });

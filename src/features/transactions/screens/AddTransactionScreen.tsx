@@ -104,7 +104,7 @@ export default function AddOrEditTransaction() {
 
   return (
     <Screen padded={false}>
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <ThemedText variant="labelCaps" tone="muted">
             {editingId ? 'EDIT TRANSACTION' : 'NEW TRANSACTION'}

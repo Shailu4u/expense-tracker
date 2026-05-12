@@ -33,6 +33,11 @@ export async function isPlatformSupported(): Promise<boolean> {
   return svc.isSupported;
 }
 
+export async function checkPermission(): Promise<boolean> {
+  const svc = await loadSmsService();
+  return svc.checkPermission();
+}
+
 export async function requestPermission(): Promise<boolean> {
   const svc = await loadSmsService();
   return svc.requestPermission();

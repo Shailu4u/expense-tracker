@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function DonutChart({ slices, size = 180, thickness = 22, children }: Props) {
-  const total = slices.reduce((s, x) => s + Math.max(x.value, 0), 0);
+  const total = slices.reduce((s, x) => s + (Number.isFinite(x.value) ? Math.max(x.value, 0) : 0), 0);
   const r = (size - thickness) / 2;
   const cx = size / 2;
   const cy = size / 2;
@@ -43,6 +43,8 @@ export function DonutChart({ slices, size = 180, thickness = 22, children }: Pro
             const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
             acc += v;
             const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
+
+            if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
             const large = end - start > Math.PI ? 1 : 0;
             const x1 = cx + r * Math.cos(start);
             const y1 = cy + r * Math.sin(start);

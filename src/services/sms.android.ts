@@ -26,6 +26,11 @@ function loadModule(): SmsAndroidModule | null {
   }
 }
 
+export async function checkPermission(): Promise<boolean> {
+  const READ = 'android.permission.READ_SMS' as Parameters<typeof PermissionsAndroid.check>[0];
+  return PermissionsAndroid.check(READ);
+}
+
 export async function requestPermission(): Promise<boolean> {
   const READ = 'android.permission.READ_SMS' as Parameters<
     typeof PermissionsAndroid.requestMultiple

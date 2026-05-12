@@ -33,5 +33,7 @@ function toneStyle(t: Tone) {
 }
 
 const styles = StyleSheet.create({
-  base: {},
+  base: {
+    includeFontPadding: false,
+  },
 });

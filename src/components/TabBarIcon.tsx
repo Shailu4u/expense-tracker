@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native';
-import Svg, { Path, Circle } from 'react-native-svg';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { palette } from '@/theme/tokens';
 
 type IconName = 'home' | 'list' | 'add' | 'budget' | 'more';
 
@@ -12,60 +13,42 @@ interface Props {
 
 export function TabBarIcon({ name, color, focused, size = 24 }: Props) {
   return (
-    <View style={styles.wrap}>
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        {paths(name, color, focused)}
-      </Svg>
+    <View style={[styles.wrap, focused && styles.focusedWrap]}>
+      <MaterialCommunityIcons
+        name={iconName(name, focused)}
+        size={size}
+        color={color}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      />
     </View>
   );
 }
 
-function paths(name: IconName, color: string, focused: boolean) {
-  const stroke = color;
-  const fill = focused ? color : 'none';
-  const sw = focused ? 2 : 1.6;
+function iconName(name: IconName, focused: boolean): React.ComponentProps<typeof MaterialCommunityIcons>['name'] {
   switch (name) {
     case 'home':
-      return (
-        <Path
-          d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9z"
-          stroke={stroke}
-          strokeWidth={sw}
-          strokeLinejoin="round"
-          fill={focused ? color + '22' : 'none'}
-        />
-      );
+      return focused ? 'home-variant' : 'home-variant-outline';
     case 'list':
-      return (
-        <>
-          <Path d="M4 6h16M4 12h16M4 18h10" stroke={stroke} strokeWidth={sw} strokeLinecap="round" />
-        </>
-      );
+      return focused ? 'format-list-bulleted' : 'format-list-bulleted-square';
     case 'add':
-      return (
-        <>
-          <Circle cx={12} cy={12} r={10} stroke={stroke} strokeWidth={sw} fill={focused ? color + '22' : 'none'} />
-          <Path d="M12 7v10M7 12h10" stroke={stroke} strokeWidth={sw} strokeLinecap="round" />
-        </>
-      );
+      return focused ? 'plus-circle' : 'plus-circle-outline';
     case 'budget':
-      return (
-        <>
-          <Circle cx={12} cy={12} r={9} stroke={stroke} strokeWidth={sw} fill={focused ? color + '22' : 'none'} />
-          <Path d="M12 3a9 9 0 019 9h-9V3z" fill={focused ? color : color + '44'} />
-        </>
-      );
+      return focused ? 'wallet' : 'wallet-outline';
     case 'more':
-      return (
-        <>
-          <Circle cx={6} cy={12} r={1.6} fill={stroke} />
-          <Circle cx={12} cy={12} r={1.6} fill={stroke} />
-          <Circle cx={18} cy={12} r={1.6} fill={stroke} />
-        </>
-      );
+      return focused ? 'dots-grid' : 'dots-grid';
   }
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', justifyContent: 'center' },
+  wrap: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+  },
+  focusedWrap: {
+    backgroundColor: palette.tabActive,
+  },
 });

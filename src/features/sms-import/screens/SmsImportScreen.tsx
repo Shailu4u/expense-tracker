@@ -20,6 +20,12 @@ export function SmsImportScreen() {
     SmsRepo.isPlatformSupported().then(setSupported);
   }, []);
 
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      SmsRepo.checkPermission().then(setPermission);
+    }
+  }, []);
+
   if (Platform.OS !== 'android' || supported === false) {
     return (
       <Screen scroll>
@@ -73,6 +79,11 @@ export function SmsImportScreen() {
             {importMut.data && (
               <ThemedText variant="bodySm" tone="muted">
                 Scanned {importMut.data.scanned}, found {importMut.data.parsed} new.
+              </ThemedText>
+            )}
+            {importMut.isError && (
+              <ThemedText variant="bodySm" tone="muted">
+                {importMut.error instanceof Error ? importMut.error.message : 'Scan failed.'}
               </ThemedText>
             )}
           </Card>

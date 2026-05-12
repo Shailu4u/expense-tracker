@@ -3,6 +3,10 @@ import type { SmsRecord } from './types';
 
 export const isSupported = false;
 
+export async function checkPermission(): Promise<boolean> {
+  return false;
+}
+
 export async function requestPermission(): Promise<boolean> {
   return false;
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Screen, ThemedText, Card, CategoryIcon, Button } from '@/components';
+import { Screen, ThemedText, Card, CategoryIcon, Button, GradientPanel } from '@/components';
 import { palette, spacing } from '@/theme/tokens';
 import { useCategories, useHideCategory, useUnhideCategory } from '@/features/categories/hooks';
 
@@ -14,12 +14,15 @@ export function CategoriesScreen() {
 
   return (
     <Screen padded={false}>
-      <View style={styles.header}>
-        <ThemedText variant="headlineMd">Categories</ThemedText>
-        <ThemedText variant="bodySm" tone="muted">
+      <GradientPanel style={styles.headerCard}>
+        <ThemedText variant="labelCaps" tone="inverse">CATEGORIES</ThemedText>
+        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+          Shape the spending system to match real life.
+        </ThemedText>
+        <ThemedText variant="bodySm" tone="inverse">
           Tap to edit. Hide system categories you don't use; create your own for niche spends.
         </ThemedText>
-      </View>
+      </GradientPanel>
 
       <View style={styles.toolbar}>
         <Button
@@ -84,7 +87,7 @@ export function CategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: spacing.containerMargin, paddingTop: spacing.lg, gap: spacing.xs },
+  headerCard: { marginHorizontal: spacing.containerMargin, marginTop: spacing.lg },
   toolbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',

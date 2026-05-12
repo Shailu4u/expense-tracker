@@ -6,7 +6,7 @@ import { newId } from '@/utils/id';
 const RECEIPTS_DIR = 'receipts';
 
 async function ensureDir(): Promise<string> {
-  const root = `${FileSystem.documentDirectory}${RECEIPTS_DIR}/`;
+  const root = `${FileSystem.Paths.document.uri}${RECEIPTS_DIR}/`;
   const info = await FileSystem.getInfoAsync(root);
   if (!info.exists) await FileSystem.makeDirectoryAsync(root, { intermediates: true });
   return root;
@@ -60,7 +60,7 @@ async function storeFromUri(
   const fileName = `${newId()}.jpg`;
   const finalUri = `${txnDir}${fileName}`;
   await FileSystem.copyAsync({ from: manipulated.uri, to: finalUri });
-  const fileInfo = await FileSystem.getInfoAsync(finalUri, { size: true });
+  const fileInfo = await FileSystem.getInfoAsync(finalUri);
   return {
     uri: finalUri,
     width: manipulated.width,

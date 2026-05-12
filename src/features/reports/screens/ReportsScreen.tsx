@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Screen, ThemedText, Card, MoneyText, DonutChart, MonthlyBars, CategoryIcon } from '@/components';
+import { Screen, ThemedText, Card, MoneyText, DonutChart, MonthlyBars, GradientPanel } from '@/components';
 import { palette, spacing } from '@/theme/tokens';
 import { useCategorySums, useMonthSum } from '@/features/transactions/hooks';
 import { useCategories } from '@/features/categories/hooks';
@@ -31,30 +31,41 @@ export function ReportsScreen() {
     return m;
   }, [categories]);
 
-  const slices = sums.map((s) => ({
-    value: s.totalPaise,
-    color: catById.get(s.categoryId)?.color ?? palette.outline,
-    label: catById.get(s.categoryId)?.name ?? 'Other',
-  }));
+  const slices = useMemo(
+    () =>
+      sums.map((s) => ({
+        value: s.totalPaise,
+        color: catById.get(s.categoryId)?.color ?? palette.outline,
+        label: catById.get(s.categoryId)?.name ?? 'Other',
+      })),
+    [sums, catById]
+  );
 
-  const bars = monthly.map((m) => {
-    const [, mm] = m.month.split('-');
-    return {
-      label: monthShort(Number(mm)),
-      expense: m.expensePaise,
-      income: m.incomePaise,
-    };
-  });
+  const bars = useMemo(
+    () =>
+      monthly.map((m) => {
+        const mm = m.month?.split('-')[1];
+        return {
+          label: mm ? monthShort(Number(mm)) : '',
+          expense: m.expensePaise,
+          income: m.incomePaise,
+        };
+      }),
+    [monthly]
+  );
 
   return (
     <Screen padded={false}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <ThemedText variant="headlineMd">Reports</ThemedText>
-          <ThemedText variant="bodySm" tone="muted">
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
+        <GradientPanel style={styles.headerCard}>
+          <ThemedText variant="labelCaps" tone="inverse">REPORTS</ThemedText>
+          <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+            Your month in patterns, not spreadsheets.
+          </ThemedText>
+          <ThemedText variant="bodySm" tone="inverse">
             On-device analytics. Nothing leaves your phone.
           </ThemedText>
-        </View>
+        </GradientPanel>
 
         <Card style={styles.card}>
           <ThemedText variant="labelCaps" tone="muted">SPEND BY CATEGORY · THIS MONTH</ThemedText>
@@ -134,8 +145,8 @@ function monthShort(m: number): string {
 
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.containerMargin, paddingBottom: spacing.xl, gap: spacing.md },
-  header: { paddingTop: spacing.lg, gap: spacing.xs },
-  card: { gap: spacing.sm },
+  headerCard: { marginTop: spacing.lg },
+  card: {},
   donutRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 2 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { palette, typography } from '@/theme/tokens';
+import { palette, radius, spacing, typography, elevation } from '@/theme/tokens';
 import { TabBarIcon } from '@/components/TabBarIcon';
 
 export default function TabsLayout() {
@@ -9,12 +9,18 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: palette.primary,
         tabBarInactiveTintColor: palette.onSurfaceVariant,
+        sceneStyle: { backgroundColor: palette.background },
         tabBarStyle: {
-          backgroundColor: palette.surfaceContainerLowest,
-          borderTopColor: palette.outlineVariant,
-          height: 64,
-          paddingTop: 6,
-          paddingBottom: 8,
+          backgroundColor: palette.tabSurface,
+          borderTopColor: palette.tabBorder,
+          borderTopWidth: 1,
+          height: 76,
+          paddingTop: 8,
+          paddingBottom: 10,
+          paddingHorizontal: spacing.sm,
+          borderTopLeftRadius: radius.xl,
+          borderTopRightRadius: radius.xl,
+          ...elevation.card,
         },
         tabBarLabelStyle: { ...typography.labelCaps, fontSize: 11 },
       }}

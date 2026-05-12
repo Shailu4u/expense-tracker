@@ -10,3 +10,4 @@ export { TextField } from './TextField';
 export { AmountKeypad } from './AmountKeypad';
 export { DonutChart } from './DonutChart';
 export { MonthlyBars } from './MonthlyBars';
+export { GradientPanel } from './GradientPanel';

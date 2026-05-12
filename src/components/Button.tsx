@@ -58,9 +58,9 @@ function styleFor(v: Variant): ViewStyle {
       return { backgroundColor: palette.primaryContainer };
     case 'secondary':
       return {
-        backgroundColor: palette.surfaceContainerLowest,
+        backgroundColor: palette.surfaceOverlay,
         borderWidth: 1,
-        borderColor: palette.outlineVariant,
+        borderColor: palette.tabBorder,
       };
     case 'ghost':
       return { backgroundColor: 'transparent' };
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: radius.base,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',

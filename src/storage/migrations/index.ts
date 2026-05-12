@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { migration001 } from './001_init';
 import { seedDefaults } from './002_seed';
+import { fixSmsSchema } from './003_sms_schema';
 
 interface Migration {
   version: number;
@@ -8,7 +9,7 @@ interface Migration {
   up: (db: SQLiteDatabase) => Promise<void>;
 }
 
-const MIGRATIONS: Migration[] = [migration001, seedDefaults];
+const MIGRATIONS: Migration[] = [migration001, seedDefaults, fixSmsSchema];
 
 export async function runMigrations(db: SQLiteDatabase): Promise<void> {
   await db.execAsync(`

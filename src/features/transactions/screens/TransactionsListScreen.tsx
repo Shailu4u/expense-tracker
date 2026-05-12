@@ -121,7 +121,7 @@ export function TransactionsListScreen() {
       <Modal visible={filterOpen} animationType="slide" transparent onRequestClose={() => setFilterOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setFilterOpen(false)} />
         <View style={styles.sheet}>
-          <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
             <ThemedText variant="headlineMd">Filters</ThemedText>
 
             <ThemedText variant="labelCaps" tone="muted">KIND</ThemedText>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
-import { Screen, ThemedText, Card, Button } from '@/components';
-import { spacing } from '@/theme/tokens';
+import { Screen, ThemedText, Card, Button, GradientPanel } from '@/components';
+import { palette, spacing } from '@/theme/tokens';
 import * as Backup from '@/services/backup';
 import { monthRange } from '@/utils/date';
 
@@ -62,25 +62,39 @@ export default function BackupScreen() {
   }
 
   return (
-    <Screen scroll>
-      <View style={styles.header}>
-        <ThemedText variant="headlineMd">Backup &amp; Export</ThemedText>
-        <ThemedText variant="bodySm" tone="muted">
+    <Screen scroll style={styles.scroll}>
+      <GradientPanel style={styles.header}>
+        <ThemedText variant="labelCaps" tone="inverse">
+          BACKUP
+        </ThemedText>
+        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+          Keep a clean offline copy of everything.
+        </ThemedText>
+        <ThemedText variant="bodySm" tone="inverse">
           Local files only. Use your device's Share sheet to copy them somewhere safe.
         </ThemedText>
-      </View>
+      </GradientPanel>
 
       <Card>
-        <ThemedText variant="labelCaps" tone="muted">BACKUP</ThemedText>
+        <ThemedText variant="labelCaps" tone="muted">
+          BACKUP
+        </ThemedText>
         <ThemedText variant="bodySm" tone="muted">
           Full JSON backup including categories, budgets, recurring, and SMS history.
         </ThemedText>
         <Button label="Export backup" onPress={onExport} loading={busy === 'export'} />
-        <Button label="Restore from backup…" variant="secondary" onPress={onRestore} loading={busy === 'restore'} />
+        <Button
+          label="Restore from backup…"
+          variant="secondary"
+          onPress={onRestore}
+          loading={busy === 'restore'}
+        />
       </Card>
 
       <Card>
-        <ThemedText variant="labelCaps" tone="muted">CSV EXPORT</ThemedText>
+        <ThemedText variant="labelCaps" tone="muted">
+          CSV EXPORT
+        </ThemedText>
         <ThemedText variant="bodySm" tone="muted">
           Transactions for the current month as CSV.
         </ThemedText>
@@ -91,5 +105,6 @@ export default function BackupScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingVertical: spacing.lg, gap: spacing.xs },
+  header: { marginTop: spacing.lg, marginBottom: spacing.md },
+  scroll: { gap: spacing.md },
 });

@@ -16,7 +16,10 @@ interface Props {
 }
 
 export function MonthlyBars({ data, height = 160 }: Props) {
-  const max = Math.max(1, ...data.flatMap((d) => [d.expense, d.income]));
+  const max = Math.max(1, ...data.flatMap((d) => [
+    Number.isFinite(d.expense) ? d.expense : 0,
+    Number.isFinite(d.income) ? d.income : 0
+  ]));
   const padding = 16;
   const barGap = 4;
   const groupGap = 12;

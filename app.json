@@ -1,17 +1,21 @@
 {
   "expo": {
-    "name": "RupeeSafe",
+    "name": "Rupee Safe",
     "slug": "rupeesafe",
     "scheme": "rupeesafe",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "icon": "./icons/appstore.png",
     "splash": {
+      "image": "./icons/playstore.png",
       "backgroundColor": "#fbf9f9",
       "resizeMode": "contain"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.rupeesafe.app"
@@ -19,15 +23,17 @@
     "android": {
       "package": "com.rupeesafe.app",
       "adaptiveIcon": {
+        "foregroundImage": "./icons/playstore.png",
         "backgroundColor": "#fbf9f9"
       },
       "permissions": [
-        "USE_BIOMETRIC",
-        "USE_FINGERPRINT",
-        "READ_SMS",
-        "RECEIVE_SMS",
-        "VIBRATE",
-        "POST_NOTIFICATIONS"
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.READ_SMS",
+        "android.permission.RECEIVE_SMS",
+        "android.permission.VIBRATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -46,10 +52,20 @@
         {
           "color": "#00695c"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1805101c-538b-44f2-86c2-38289d3bff48"
+      }
+    },
+    "owner": "shailuu"
   }
 }

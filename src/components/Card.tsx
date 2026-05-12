@@ -15,13 +15,14 @@ export function Card({ padded = true, style, children, ...rest }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: palette.surfaceContainerLowest,
-    borderRadius: radius.lg,
+    backgroundColor: palette.surfaceElevated,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
+    borderColor: palette.tabBorder,
     ...elevation.card,
   },
   padded: {
-    padding: spacing.md,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
 });

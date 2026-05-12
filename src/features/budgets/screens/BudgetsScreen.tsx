@@ -1,26 +1,49 @@
 import { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
-import { Screen, ThemedText, Card, MoneyText, Button, CategoryIcon, TextField } from '@/components';
+import { Screen, ThemedText, Card, MoneyText, Button, CategoryIcon, TextField, GradientPanel } from '@/components';
 import { palette, radius, spacing } from '@/theme/tokens';
-import { monthRange } from '@/utils/date';
+import { budgetCycleRange } from '@/utils/date';
 import { formatINR, rupeesToPaise } from '@/utils/money';
 import { useBudgetsForMonth, useUpsertBudget, useDeleteBudget } from '../hooks';
+import type { Budget } from '../repository';
 import { useCategorySums, useMonthSum } from '@/features/transactions/hooks';
 import { useCategories } from '@/features/categories/hooks';
-import { startOfMonth } from 'date-fns';
+import type { Category } from '@/features/categories/repository';
+import { useSettings } from '@/features/security/hooks';
+
+export function availableBudgetCategories(categories: Category[], budgets: Budget[]): Category[] {
+  const budgetedCategoryIds = new Set(
+    budgets
+      .filter((budget) => budget.scope === 'category' && budget.categoryId)
+      .map((budget) => budget.categoryId),
+  );
+
+  return categories.filter(
+    (category) =>
+      category.hiddenAt === null &&
+      category.kind !== 'income' &&
+      !budgetedCategoryIds.has(category.id),
+  );
+}
 
 export function BudgetsScreen() {
-  const range = useMemo(() => monthRange(new Date()), []);
-  const monthStart = useMemo(() => startOfMonth(new Date()).toISOString(), []);
+  const { data: settings } = useSettings();
+  const monthStartDay = settings?.monthStartDay ?? 1;
+  const range = useMemo(() => budgetCycleRange(new Date(), monthStartDay), [monthStartDay]);
+  const monthStart = range.start;
   const { data: budgets = [] } = useBudgetsForMonth(monthStart);
   const { data: spent = 0 } = useMonthSum(range.start, range.end, 'expense');
   const { data: catSums = [] } = useCategorySums(range.start, range.end);
-  const { data: categories = [] } = useCategories();
+  const { data: categories = [] } = useCategories({ includeHidden: true });
   const upsert = useUpsertBudget();
   const remove = useDeleteBudget();
 
   const overall = budgets.find((b) => b.scope === 'overall');
   const categoryBudgets = budgets.filter((b) => b.scope === 'category');
+  const availableCategories = useMemo(
+    () => availableBudgetCategories(categories, categoryBudgets),
+    [categories, categoryBudgets],
+  );
   const spentByCat = new Map(catSums.map((s) => [s.categoryId, s.totalPaise]));
   const catById = new Map(categories.map((c) => [c.id, c]));
 
@@ -44,29 +67,32 @@ export function BudgetsScreen() {
   }
 
   async function saveCategory(categoryId: string) {
-    const v = catInputs[categoryId];
-    const val = Number(v);
-    if (!Number.isFinite(val) || val <= 0) return;
+    const value = catInputs[categoryId];
+    const amount = Number(value);
+    if (!Number.isFinite(amount) || amount <= 0) return;
     await upsert.mutateAsync({
       scope: 'category',
       categoryId,
       period: 'monthly',
-      amountPaise: rupeesToPaise(val),
+      amountPaise: rupeesToPaise(amount),
       rollover: false,
       startsOn: monthStart,
     });
-    setCatInputs((p) => ({ ...p, [categoryId]: '' }));
+    setCatInputs((previous) => ({ ...previous, [categoryId]: '' }));
   }
 
   return (
     <Screen padded={false}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <ThemedText variant="headlineMd">Budgets</ThemedText>
-          <ThemedText variant="bodySm" tone="muted">
-            Set what you want to spend this month. We'll show progress, not nag.
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
+        <GradientPanel style={styles.headerCard}>
+          <ThemedText variant="labelCaps" tone="inverse">BUDGETS</ThemedText>
+          <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+            Plan the month with softer guardrails.
           </ThemedText>
-        </View>
+          <ThemedText variant="bodySm" tone="inverse">
+            Set what you want to spend this cycle. We'll show progress, not nag.
+          </ThemedText>
+        </GradientPanel>
 
         <Card style={styles.card}>
           <ThemedText variant="labelCaps" tone="muted">OVERALL</ThemedText>
@@ -85,7 +111,7 @@ export function BudgetsScreen() {
           ) : (
             <View style={styles.editRow}>
               <TextField
-                placeholder="Amount in ₹"
+                placeholder="Amount in INR"
                 keyboardType="decimal-pad"
                 value={overallInput}
                 onChangeText={setOverallInput}
@@ -101,23 +127,28 @@ export function BudgetsScreen() {
           {categoryBudgets.length === 0 && (
             <ThemedText variant="bodySm" tone="muted">No category budgets yet.</ThemedText>
           )}
-          {categoryBudgets.map((b) => {
-            const c = b.categoryId ? catById.get(b.categoryId) : undefined;
-            const s = b.categoryId ? spentByCat.get(b.categoryId) ?? 0 : 0;
+          {categoryBudgets.map((budget) => {
+            const category = budget.categoryId ? catById.get(budget.categoryId) : undefined;
+            const spentForCategory = budget.categoryId ? spentByCat.get(budget.categoryId) ?? 0 : 0;
+
             return (
-              <View key={b.id} style={styles.catBudgetRow}>
-                <CategoryIcon icon={c?.icon ?? 'category'} color={c?.color ?? palette.outline} size={36} />
+              <View key={budget.id} style={styles.catBudgetRow}>
+                <CategoryIcon
+                  icon={category?.icon ?? 'category'}
+                  color={category?.color ?? palette.outline}
+                  size={36}
+                />
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
-                    {c?.name ?? 'Category'}
+                    {category?.name ?? 'Category'}
                   </ThemedText>
-                  <BudgetTrack spent={s} limit={b.amountPaise} />
+                  <BudgetTrack spent={spentForCategory} limit={budget.amountPaise} />
                 </View>
                 <Pressable
                   onPress={() => {
-                    Alert.alert(`Remove budget for ${c?.name ?? 'this category'}?`, undefined, [
+                    Alert.alert(`Remove budget for ${category?.name ?? 'this category'}?`, undefined, [
                       { text: 'Cancel', style: 'cancel' },
-                      { text: 'Remove', style: 'destructive', onPress: () => remove.mutate(b.id) },
+                      { text: 'Remove', style: 'destructive', onPress: () => remove.mutate(budget.id) },
                     ]);
                   }}
                   hitSlop={12}
@@ -130,22 +161,28 @@ export function BudgetsScreen() {
 
           <View style={styles.divider} />
           <ThemedText variant="labelCaps" tone="muted">ADD A CATEGORY BUDGET</ThemedText>
-          {categories
-            .filter((c) => c.kind !== 'income' && !categoryBudgets.find((b) => b.categoryId === c.id))
-            .slice(0, 6)
-            .map((c) => (
-              <View key={c.id} style={styles.addCatRow}>
-                <CategoryIcon icon={c.icon} color={c.color} size={32} />
-                <ThemedText variant="bodyBase" style={{ flex: 1 }}>{c.name}</ThemedText>
-                <TextField
-                  placeholder="₹"
-                  keyboardType="decimal-pad"
-                  value={catInputs[c.id] ?? ''}
-                  onChangeText={(t) => setCatInputs((p) => ({ ...p, [c.id]: t }))}
-                />
-                <Button label="Set" variant="secondary" onPress={() => saveCategory(c.id)} />
+          {availableCategories.length === 0 ? (
+            <ThemedText variant="bodySm" tone="muted">
+              All visible expense categories in this cycle already have budgets.
+            </ThemedText>
+          ) : (
+            availableCategories.map((category) => (
+              <View key={category.id} style={styles.addCatRow}>
+                <CategoryIcon icon={category.icon} color={category.color} size={32} />
+                <ThemedText variant="bodyBase" style={{ flex: 1 }}>{category.name}</ThemedText>
+                <View style={{ minWidth: 80 }}>
+                  <TextField
+                    placeholder="INR"
+                    keyboardType="decimal-pad"
+                    value={catInputs[category.id] ?? ''}
+                    onChangeText={(text) => setCatInputs((previous) => ({ ...previous, [category.id]: text }))}
+                    accessibilityLabel={`${category.name} budget amount`}
+                  />
+                </View>
+                <Button label="Set" variant="secondary" onTouchStart={() => saveCategory(category.id)} loading={upsert.isPending} />
               </View>
-            ))}
+            ))
+          )}
         </Card>
       </ScrollView>
     </Screen>
@@ -185,6 +222,7 @@ function BudgetTrack({ spent, limit }: { spent: number; limit: number }) {
   const used = Math.min(spent / Math.max(limit, 1), 1);
   const overBy = spent - limit;
   const tone: 'muted' | 'error' = used >= 1 ? 'error' : 'muted';
+
   return (
     <View>
       <View style={styles.track}>
@@ -209,7 +247,7 @@ function BudgetTrack({ spent, limit }: { spent: number; limit: number }) {
 
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.containerMargin, paddingBottom: spacing.xl, gap: spacing.md },
-  header: { paddingTop: spacing.lg, gap: spacing.xs },
+  headerCard: { marginTop: spacing.lg },
   card: { gap: spacing.sm },
   budgetRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.xs },
   budgetHeadRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

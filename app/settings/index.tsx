@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { Screen, ThemedText, Card, Button } from '@/components';
+import { Screen, ThemedText, Card, Button, GradientPanel } from '@/components';
 import { palette, spacing } from '@/theme/tokens';
 import { useSettings } from '@/features/security/hooks';
 import { useLockStore } from '@/features/security/lockStore';
@@ -20,7 +20,9 @@ export default function SettingsScreen() {
   if (!settings) {
     return (
       <Screen scroll>
-        <ThemedText variant="bodyBase" tone="muted">Loading…</ThemedText>
+        <ThemedText variant="bodyBase" tone="muted">
+          Loading…
+        </ThemedText>
       </Screen>
     );
   }
@@ -52,16 +54,25 @@ export default function SettingsScreen() {
   }
 
   return (
-    <Screen scroll>
-      <View style={styles.header}>
-        <ThemedText variant="headlineMd">Settings</ThemedText>
-      </View>
+    <Screen scroll style={styles.scroll}>
+      <GradientPanel style={styles.header}>
+        <ThemedText variant="labelCaps" tone="inverse">
+          SETTINGS
+        </ThemedText>
+        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+          Privacy-first controls for your device.
+        </ThemedText>
+      </GradientPanel>
 
       <Card>
-        <ThemedText variant="labelCaps" tone="muted">SECURITY</ThemedText>
+        <ThemedText variant="labelCaps" tone="muted">
+          SECURITY
+        </ThemedText>
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
-            <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>App lock</ThemedText>
+            <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
+              App lock
+            </ThemedText>
             <ThemedText variant="bodySm" tone="muted">
               {settings.lockKind === 'none'
                 ? 'Off'
@@ -79,9 +90,19 @@ export default function SettingsScreen() {
       </Card>
 
       <Card>
-        <ThemedText variant="labelCaps" tone="muted">DATA</ThemedText>
-        <Button label="Manage categories" variant="secondary" onPress={() => router.push('/categories')} />
-        <Button label="Backup & Export" variant="secondary" onPress={() => router.push('/backup')} />
+        <ThemedText variant="labelCaps" tone="muted">
+          DATA
+        </ThemedText>
+        <Button
+          label="Manage categories"
+          variant="secondary"
+          onPress={() => router.push('/categories')}
+        />
+        <Button
+          label="Backup & Export"
+          variant="secondary"
+          onPress={() => router.push('/backup')}
+        />
         <Button
           label="Load sample data"
           variant="secondary"
@@ -129,7 +150,9 @@ export default function SettingsScreen() {
       </Card>
 
       <Card>
-        <ThemedText variant="labelCaps" tone="muted">ABOUT</ThemedText>
+        <ThemedText variant="labelCaps" tone="muted">
+          ABOUT
+        </ThemedText>
         <ThemedText variant="bodyBase">RupeeSafe</ThemedText>
         <ThemedText variant="bodySm" tone="muted">
           Privacy-first. No accounts. No cloud. All data stays on this device.
@@ -140,12 +163,14 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingVertical: spacing.lg, gap: spacing.xs },
+  header: { marginTop: spacing.lg, marginBottom: spacing.md },
+  scroll: { gap: spacing.md },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingVertical: spacing.sm,
+    paddingTop: spacing.md,
+    marginTop: spacing.xs,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: palette.outlineVariant,
   },
