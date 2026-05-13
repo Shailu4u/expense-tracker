@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Card, CategoryIcon, Button, GradientPanel } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useCategories, useHideCategory, useUnhideCategory } from '@/features/categories/hooks';
 
 export function CategoriesScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const [showHidden, setShowHidden] = useState(false);
   const { data = [], isLoading } = useCategories({ includeHidden: showHidden });
   const hide = useHideCategory();
@@ -16,7 +18,7 @@ export function CategoriesScreen() {
     <Screen padded={false}>
       <GradientPanel style={styles.headerCard}>
         <ThemedText variant="labelCaps" tone="inverse">CATEGORIES</ThemedText>
-        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+        <ThemedText variant="headlineMd" tone="inverse">
           Shape the spending system to match real life.
         </ThemedText>
         <ThemedText variant="bodySm" tone="inverse">

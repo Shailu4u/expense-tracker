@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import Svg, { G, Path, Circle } from 'react-native-svg';
-import { palette } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 interface Slice {
   value: number;
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export function DonutChart({ slices, size = 180, thickness = 22, children }: Props) {
+  const { palette } = useTheme();
   const total = slices.reduce((s, x) => s + (Number.isFinite(x.value) ? Math.max(x.value, 0) : 0), 0);
   const r = (size - thickness) / 2;
   const cx = size / 2;
@@ -43,7 +44,6 @@ export function DonutChart({ slices, size = 180, thickness = 22, children }: Pro
             const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
             acc += v;
             const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
-
             if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
             const large = end - start > Math.PI ? 1 : 0;
             const x1 = cx + r * Math.cos(start);
@@ -51,16 +51,7 @@ export function DonutChart({ slices, size = 180, thickness = 22, children }: Pro
             const x2 = cx + r * Math.cos(end);
             const y2 = cy + r * Math.sin(end);
             const d = `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
-            return (
-              <Path
-                key={i}
-                d={d}
-                stroke={s.color}
-                strokeWidth={thickness}
-                strokeLinecap="butt"
-                fill="none"
-              />
-            );
+            return <Path key={i} d={d} stroke={s.color} strokeWidth={thickness} strokeLinecap="butt" fill="none" />;
           })}
         </G>
       </Svg>

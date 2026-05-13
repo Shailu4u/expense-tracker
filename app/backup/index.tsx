@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { StyleSheet, Alert } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { Screen, ThemedText, Card, Button, GradientPanel } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import * as Backup from '@/services/backup';
 import { monthRange } from '@/utils/date';
 
 export default function BackupScreen() {
   const qc = useQueryClient();
+  const { palette } = useTheme();
   const [busy, setBusy] = useState<'export' | 'csv' | 'restore' | null>(null);
 
   async function onExport() {
@@ -67,7 +69,7 @@ export default function BackupScreen() {
         <ThemedText variant="labelCaps" tone="inverse">
           BACKUP
         </ThemedText>
-        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+        <ThemedText variant="headlineMd" tone="inverse">
           Keep a clean offline copy of everything.
         </ThemedText>
         <ThemedText variant="bodySm" tone="inverse">

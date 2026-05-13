@@ -1,7 +1,7 @@
 // Tokens derived from DESIGN.md frontmatter. This is the only source of colors,
 // typography, radii, and spacing. No raw hex codes elsewhere in the codebase.
 
-export const palette = {
+const lightPalette = {
   surface: '#fbf9f9',
   surfaceDim: '#dbdad9',
   surfaceBright: '#fbf9f9',
@@ -51,12 +51,69 @@ export const palette = {
   tabSurface: '#fffaf7',
   tabBorder: '#d7e4df',
   tabActive: '#e2f7f0',
-  // Semantic, derived
   warningContainer: '#fff3cd',
   onWarningContainer: '#5c4400',
   successContainer: '#d4edda',
   onSuccessContainer: '#0f5132',
 } as const;
+
+const darkPalette = {
+  surface: '#121212',
+  surfaceDim: '#1a1a1a',
+  surfaceBright: '#2a2a2a',
+  surfaceContainerLowest: '#0f0f0f',
+  surfaceContainerLow: '#1a1a1a',
+  surfaceContainer: '#232323',
+  surfaceContainerHigh: '#2c2c2c',
+  surfaceContainerHighest: '#353535',
+  onSurface: '#e8e8e8',
+  onSurfaceVariant: '#a8a8a8',
+  inverseSurface: '#e8e8e8',
+  inverseOnSurface: '#ffffff',
+  outline: '#888888',
+  outlineVariant: '#555555',
+  surfaceTint: '#5dd6c4',
+  primary: '#84d5c5',
+  onPrimary: '#ffffff',
+  primaryContainer: '#005046',
+  onPrimaryContainer: '#94e5d5',
+  inversePrimary: '#004f45',
+  secondary: '#bcbdbc',
+  onSecondary: '#2a2a2a',
+  secondaryContainer: '#424242',
+  onSecondaryContainer: '#d7d8d7',
+  tertiary: '#ffb59f',
+  onTertiary: '#4a2418',
+  tertiaryContainer: '#652f25',
+  onTertiaryContainer: '#ffcabb',
+  error: '#ffb4ab',
+  onError: '#690005',
+  errorContainer: '#93000a',
+  onErrorContainer: '#ffb4ab',
+  primaryFixed: '#a0f2e1',
+  primaryFixedDim: '#84d5c5',
+  onPrimaryFixed: '#00201b',
+  onPrimaryFixedVariant: '#005046',
+  background: '#0f0f0f',
+  onBackground: '#e8e8e8',
+  backgroundAccent: '#1a2f2b',
+  surfaceElevated: '#252525',
+  surfaceOverlay: '#1f1f1f',
+  heroGradientStart: '#0b5f54',
+  heroGradientMid: '#083d36',
+  heroGradientEnd: '#0d3a43',
+  heroGlowMint: '#5dd6c4',
+  heroGlowPeach: '#ffb594',
+  tabSurface: '#1a1a1a',
+  tabBorder: '#333333',
+  tabActive: '#0d3d39',
+  warningContainer: '#664d00',
+  onWarningContainer: '#ffe0b2',
+  successContainer: '#1b5e20',
+  onSuccessContainer: '#b3e5b3',
+} as const;
+
+export const palette = lightPalette;
 
 export const spacing = {
   xs: 4,
@@ -103,6 +160,12 @@ export const elevation = {
     elevation: 6,
   },
 } as const;
+
+export type Palette = typeof lightPalette;
+
+export function getPalette(theme: 'light' | 'dark'): Palette {
+  return theme === 'dark' ? (darkPalette as unknown as Palette) : lightPalette;
+}
 
 export const tokens = { palette, spacing, radius, typography, elevation } as const;
 export type Tokens = typeof tokens;

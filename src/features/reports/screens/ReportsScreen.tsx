@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Card, MoneyText, DonutChart, MonthlyBars, GradientPanel } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useCategorySums, useMonthSum } from '@/features/transactions/hooks';
 import { useCategories } from '@/features/categories/hooks';
 import * as TransactionRepo from '@/features/transactions/repository';
@@ -12,6 +13,7 @@ import { formatINR } from '@/utils/money';
 
 export function ReportsScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const range = useMemo(() => monthRange(new Date()), []);
   const { data: sums = [] } = useCategorySums(range.start, range.end);
   const { data: categories = [] } = useCategories({ includeHidden: true });
@@ -59,7 +61,7 @@ export function ReportsScreen() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         <GradientPanel style={styles.headerCard}>
           <ThemedText variant="labelCaps" tone="inverse">REPORTS</ThemedText>
-          <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+          <ThemedText variant="headlineMd" tone="inverse">
             Your month in patterns, not spreadsheets.
           </ThemedText>
           <ThemedText variant="bodySm" tone="inverse">
@@ -120,7 +122,12 @@ export function ReportsScreen() {
             </ThemedText>
           ) : (
             top.map((m) => (
-              <View key={m.merchant} style={styles.merchRow}>
+              <Pressable
+                key={m.merchant}
+                onPress={() => router.push({ pathname: '/(tabs)/transactions', params: { search: m.merchant } })}
+                android_ripple={{ color: palette.outlineVariant }}
+                style={({ pressed }) => [styles.merchRow, { borderTopColor: palette.outlineVariant }, pressed && { opacity: 0.7 }]}
+              >
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
                     {m.merchant}
@@ -130,7 +137,7 @@ export function ReportsScreen() {
                   </ThemedText>
                 </View>
                 <MoneyText paise={m.totalPaise} />
-              </View>
+              </Pressable>
             ))
           )}
         </Card>
@@ -155,6 +162,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: palette.outlineVariant,
   },
 });

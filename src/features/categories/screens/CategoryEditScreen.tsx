@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen, ThemedText, Card, Button, TextField, CategoryIcon } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import {
   useCategories,
   useCategory,
@@ -26,6 +27,7 @@ const PRESET_ICONS = [
 
 export function CategoryEditScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const editing = id && id !== 'new' ? id : null;
   const { data: existing } = useCategory(editing ?? undefined);
@@ -103,7 +105,11 @@ export function CategoryEditScreen() {
               onPress={() => setKind(k)}
               accessibilityRole="button"
               accessibilityState={{ selected: kind === k }}
-              style={[styles.chip, kind === k && styles.chipActive]}
+              style={[
+                styles.chip,
+                { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                kind === k && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+              ]}
             >
               <ThemedText
                 variant="bodySm"
@@ -169,12 +175,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceContainerLowest,
   },
-  chipActive: { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
   swatch: { width: 36, height: 36, borderRadius: 18, marginRight: spacing.xs, marginBottom: spacing.xs },
   iconCell: {
     padding: spacing.xs,

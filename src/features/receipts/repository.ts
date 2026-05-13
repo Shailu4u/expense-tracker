@@ -49,15 +49,20 @@ export async function listAll(): Promise<Receipt[]> {
   return rows.map(toModel);
 }
 
+export type AttachResult =
+  | { kind: 'ok'; receipt: Receipt }
+  | { kind: 'cancelled' }
+  | { kind: 'permission-denied'; source: 'pick' | 'camera' };
+
 export async function attach(
   transactionId: string,
   source: 'pick' | 'camera',
-): Promise<Receipt | null> {
+): Promise<AttachResult> {
   const stored =
     source === 'pick'
       ? await ReceiptsService.pickAndStore(transactionId)
       : await ReceiptsService.captureAndStore(transactionId);
-  if (!stored) return null;
+  if (stored.kind !== 'ok') return stored;
 
   const db = await getDb();
   const id = newId();
@@ -68,13 +73,16 @@ export async function attach(
     [id, transactionId, stored.uri, stored.width, stored.height, stored.bytes, createdAt],
   );
   return {
-    id,
-    transactionId,
-    fileUri: stored.uri,
-    width: stored.width,
-    height: stored.height,
-    bytes: stored.bytes,
-    createdAt,
+    kind: 'ok',
+    receipt: {
+      id,
+      transactionId,
+      fileUri: stored.uri,
+      width: stored.width,
+      height: stored.height,
+      bytes: stored.bytes,
+      createdAt,
+    },
   };
 }
 

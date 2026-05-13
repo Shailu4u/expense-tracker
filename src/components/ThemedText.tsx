@@ -1,8 +1,9 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
-import { palette, typography } from '@/theme/tokens';
+import { typography, type Palette } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 type Variant = 'displayLg' | 'headlineMd' | 'bodyBase' | 'bodySm' | 'labelCaps';
-type Tone = 'default' | 'muted' | 'primary' | 'error' | 'inverse';
+export type Tone = 'default' | 'muted' | 'primary' | 'error' | 'inverse' | 'positive';
 
 interface Props extends TextProps {
   variant?: Variant;
@@ -10,14 +11,15 @@ interface Props extends TextProps {
 }
 
 export function ThemedText({ variant = 'bodyBase', tone = 'default', style, children, ...rest }: Props) {
+  const { palette } = useTheme();
   return (
-    <Text style={[typography[variant], toneStyle(tone), styles.base, style]} {...rest}>
+    <Text style={[typography[variant], toneStyle(tone, palette), styles.base, style]} {...rest}>
       {children}
     </Text>
   );
 }
 
-function toneStyle(t: Tone) {
+function toneStyle(t: Tone, palette: Palette) {
   switch (t) {
     case 'default':
       return { color: palette.onSurface };
@@ -29,11 +31,11 @@ function toneStyle(t: Tone) {
       return { color: palette.error };
     case 'inverse':
       return { color: palette.inverseOnSurface };
+    case 'positive':
+      return { color: palette.onSuccessContainer };
   }
 }
 
 const styles = StyleSheet.create({
-  base: {
-    includeFontPadding: false,
-  },
+  base: { includeFontPadding: false },
 });

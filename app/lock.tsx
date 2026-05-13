@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Alert } from 'react-native';
 import { Screen, ThemedText, Button, Card } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import * as Security from '@/services/security';
 import { useLockStore } from '@/features/security/lockStore';
 import { useSettings } from '@/features/security/hooks';
@@ -9,6 +10,7 @@ import { useSettings } from '@/features/security/hooks';
 export default function LockScreen() {
   const unlock = useLockStore((s) => s.unlock);
   const { data: settings } = useSettings();
+  const { palette } = useTheme();
   const [pin, setPin] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -23,9 +25,7 @@ export default function LockScreen() {
   }, []);
 
   useEffect(() => {
-    if (allowsBiometric && bioAvailable) {
-      void tryBiometric();
-    }
+    if (allowsBiometric && bioAvailable) void tryBiometric();
   }, [allowsBiometric, bioAvailable]);
 
   async function tryBiometric() {
@@ -43,12 +43,8 @@ export default function LockScreen() {
     setBusy(true);
     try {
       const ok = await Security.verifyPin(pin);
-      if (ok) {
-        unlock();
-        setPin('');
-      } else {
-        setError('Incorrect PIN. Try again.');
-      }
+      if (ok) { unlock(); setPin(''); }
+      else setError('Incorrect PIN. Try again.');
     } catch {
       setError('Could not verify PIN.');
     } finally {
@@ -61,9 +57,7 @@ export default function LockScreen() {
       <View style={styles.wrap}>
         <ThemedText variant="labelCaps" tone="muted">RUPEESAFE</ThemedText>
         <ThemedText variant="headlineMd">Welcome back</ThemedText>
-        <ThemedText variant="bodySm" tone="muted">
-          Your data is on this device only.
-        </ThemedText>
+        <ThemedText variant="bodySm" tone="muted">Your data is on this device only.</ThemedText>
 
         <Card style={styles.card}>
           {allowsPin && (
@@ -78,47 +72,18 @@ export default function LockScreen() {
                 autoFocus={!allowsBiometric}
                 placeholder="• • • •"
                 placeholderTextColor={palette.outline}
-                style={styles.input}
+                style={[styles.input, { borderColor: palette.outlineVariant, color: palette.onSurface }]}
                 accessibilityLabel="Enter PIN"
               />
-              {error && (
-                <ThemedText variant="bodySm" tone="error">
-                  {error}
-                </ThemedText>
-              )}
-              <Button
-                label="Unlock"
-                onPress={tryPin}
-                loading={busy}
-                disabled={pin.length < 4}
-                fullWidth
-              />
+              {error && <ThemedText variant="bodySm" tone="error">{error}</ThemedText>}
+              <Button label="Unlock" onPress={tryPin} loading={busy} disabled={pin.length < 4} fullWidth />
             </>
           )}
-
           {allowsBiometric && bioAvailable && (
-            <Button
-              label="Use biometric"
-              variant="secondary"
-              onPress={tryBiometric}
-              loading={busy && !pin}
-              fullWidth
-              style={{ marginTop: spacing.md }}
-            />
+            <Button label="Use biometric" variant="secondary" onPress={tryBiometric} loading={busy && !pin} fullWidth style={{ marginTop: spacing.md }} />
           )}
-
           {!allowsPin && !bioAvailable && (
-            <Button
-              label="Continue"
-              onPress={() => {
-                Alert.alert(
-                  'Lock unavailable',
-                  'No PIN is set and biometrics are not enrolled. Continue without lock.',
-                  [{ text: 'OK', onPress: unlock }],
-                );
-              }}
-              fullWidth
-            />
+            <Button label="Continue" onPress={() => Alert.alert('Lock unavailable', 'No PIN is set and biometrics are not enrolled. Continue without lock.', [{ text: 'OK', onPress: unlock }])} fullWidth />
           )}
         </Card>
       </View>
@@ -131,13 +96,11 @@ const styles = StyleSheet.create({
   card: { marginTop: spacing.lg, gap: spacing.sm },
   input: {
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     borderRadius: radius.base,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: 24,
     letterSpacing: 8,
     textAlign: 'center',
-    color: palette.onSurface,
   },
 });

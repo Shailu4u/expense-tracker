@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { View, StyleSheet, FlatList, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Card, MoneyText, Button, CategoryIcon } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import {
   useRecurring,
   useDueRuns,
@@ -16,6 +17,7 @@ import { fromISO } from '@/utils/date';
 
 export function RecurringScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const sweep = useSweepDue();
   const { data: items = [] } = useRecurring();
   const { data: due = [] } = useDueRuns();
@@ -51,7 +53,7 @@ export function RecurringScreen() {
             const r = items.find((i) => i.id === run.recurringId);
             const c = r ? catById.get(r.categoryId) : undefined;
             return (
-              <View key={run.id} style={styles.dueRow}>
+              <View key={run.id} style={[styles.dueRow, { borderTopColor: palette.outlineVariant }]}>
                 <CategoryIcon icon={c?.icon ?? 'category'} color={c?.color ?? palette.outline} size={36} />
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
@@ -136,7 +138,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: palette.outlineVariant,
   },
   row: {
     flexDirection: 'row',

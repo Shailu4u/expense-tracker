@@ -21,7 +21,11 @@ export function useAttachReceipt() {
   return useMutation({
     mutationFn: ({ transactionId, source }: { transactionId: string; source: 'pick' | 'camera' }) =>
       ReceiptRepo.attach(transactionId, source),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['receipts'] }),
+    onSuccess: (result) => {
+      if (result.kind === 'ok') {
+        void qc.invalidateQueries({ queryKey: ['receipts'] });
+      }
+    },
   });
 }
 

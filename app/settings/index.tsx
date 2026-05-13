@@ -1,21 +1,35 @@
 import { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Screen, ThemedText, Card, Button, GradientPanel } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { useSettings } from '@/features/security/hooks';
 import { useLockStore } from '@/features/security/lockStore';
 import * as Settings from '@/features/settings/repository';
 import { clearPin } from '@/services/security';
 import { insertSampleData, clearAllData } from '@/services/sampleData';
+import { useThemeStore, useTheme, type ThemeMode } from '@/features/theme/themeStore';
+import { updateTheme } from '@/features/theme/hooks';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const qc = useQueryClient();
   const { data: settings } = useSettings();
   const setConfigured = useLockStore((s) => s.setConfigured);
+  const themeMode = useThemeStore((s) => s.mode);
+  const setMode = useThemeStore((s) => s.setMode);
+  const { palette: p } = useTheme();
   const [busy, setBusy] = useState(false);
+
+  async function handleThemeChange(mode: ThemeMode) {
+    setMode(mode);
+    try {
+      await updateTheme(mode, qc);
+    } catch (e) {
+      Alert.alert('Could not change theme', e instanceof Error ? e.message : 'Unknown error');
+    }
+  }
 
   if (!settings) {
     return (
@@ -59,7 +73,7 @@ export default function SettingsScreen() {
         <ThemedText variant="labelCaps" tone="inverse">
           SETTINGS
         </ThemedText>
-        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+        <ThemedText variant="headlineMd" tone="inverse">
           Privacy-first controls for your device.
         </ThemedText>
       </GradientPanel>
@@ -68,7 +82,7 @@ export default function SettingsScreen() {
         <ThemedText variant="labelCaps" tone="muted">
           SECURITY
         </ThemedText>
-        <View style={styles.row}>
+        <View style={[styles.row, { borderTopColor: p.outlineVariant }]}>
           <View style={{ flex: 1 }}>
             <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
               App lock
@@ -86,6 +100,23 @@ export default function SettingsScreen() {
           ) : (
             <Button label="Turn off" variant="danger" onPress={disableLock} loading={busy} />
           )}
+        </View>
+      </Card>
+
+      <Card>
+        <ThemedText variant="labelCaps" tone="muted">
+          APPEARANCE
+        </ThemedText>
+        <ThemedText variant="bodyBase" style={{ fontWeight: '600', marginTop: spacing.sm }}>
+          Theme
+        </ThemedText>
+        <ThemedText variant="bodySm" tone="muted" style={{ marginBottom: spacing.md }}>
+          Choose how the app looks
+        </ThemedText>
+        <View style={styles.themeGrid}>
+          <ThemeOption label="Light" mode="light" selected={themeMode === 'light'} palette={p} onPress={() => handleThemeChange('light')} />
+          <ThemeOption label="Dark" mode="dark" selected={themeMode === 'dark'} palette={p} onPress={() => handleThemeChange('dark')} />
+          <ThemeOption label="System" mode="system" selected={themeMode === 'system'} palette={p} onPress={() => handleThemeChange('system')} />
         </View>
       </Card>
 
@@ -162,6 +193,53 @@ export default function SettingsScreen() {
   );
 }
 
+function ThemeOption({
+  label,
+  mode,
+  selected,
+  palette: p,
+  onPress,
+}: {
+  label: string;
+  mode: ThemeMode;
+  selected: boolean;
+  palette: ReturnType<typeof useTheme>['palette'];
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.themeOption,
+        { borderColor: p.outlineVariant, backgroundColor: p.surfaceContainerLowest },
+        selected && { borderColor: p.primary, backgroundColor: p.primaryContainer },
+      ]}
+    >
+      {mode === 'system' ? (
+        <View style={[styles.themeDotSystem, { borderColor: p.outline }]}>
+          <View style={[styles.themeDotSystemHalf, { backgroundColor: '#fbf9f9' }]} />
+          <View style={[styles.themeDotSystemHalf, { backgroundColor: '#1a1a1a' }]} />
+        </View>
+      ) : (
+        <View
+          style={[
+            styles.themeDot,
+            { borderColor: p.outline },
+            mode === 'light' && { backgroundColor: '#fbf9f9' },
+            mode === 'dark' && { backgroundColor: '#1a1a1a' },
+          ]}
+        />
+      )}
+      <ThemedText
+        variant="bodySm"
+        style={{ fontWeight: selected ? '600' : '400', color: selected ? p.primary : p.onSurface }}
+      >
+        {label}
+      </ThemedText>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   header: { marginTop: spacing.lg, marginBottom: spacing.md },
   scroll: { gap: spacing.md },
@@ -172,6 +250,36 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     marginTop: spacing.xs,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: palette.outlineVariant,
+  },
+  themeGrid: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
+  },
+  themeOption: {
+    flex: 1,
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  themeDot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+  },
+  themeDotSystem: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    flexDirection: 'row',
+  },
+  themeDotSystemHalf: {
+    flex: 1,
   },
 });

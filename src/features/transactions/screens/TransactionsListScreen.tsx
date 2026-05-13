@@ -1,23 +1,25 @@
 import { useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Modal, Pressable, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Screen, ThemedText, Card, TextField, Button, PaymentModePicker, CategoryPicker } from '@/components';
 import { TransactionItem } from '../components/TransactionItem';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useTransactionsInRange } from '../hooks';
 import { useCategories } from '@/features/categories/hooks';
-import { monthRange, fromISO } from '@/utils/date';
+import { fromISO } from '@/utils/date';
 import { formatINR } from '@/utils/money';
 import type { TransactionRow } from '../repository';
 import type { PaymentMode, TransactionKind } from '@/types';
 
 export function TransactionsListScreen() {
-  const router = useRouter();
-  const [search, setSearch] = useState('');
+  const { palette } = useTheme();
+  const params = useLocalSearchParams<{ categoryId?: string; search?: string }>();
+  const [search, setSearch] = useState(params.search ?? '');
   const [filterOpen, setFilterOpen] = useState(false);
   const [kind, setKind] = useState<TransactionKind | 'all'>('all');
   const [paymentMode, setPaymentMode] = useState<PaymentMode | null>(null);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string | null>(params.categoryId ?? null);
   const range = useMemo(() => {
     const start = new Date();
     start.setMonth(start.getMonth() - 12);
@@ -109,7 +111,7 @@ export function TransactionsListScreen() {
             <Card padded={false}>
               {item.items.map((t, i) => (
                 <View key={t.id}>
-                  {i > 0 && <View style={styles.sep} />}
+                  {i > 0 && <View style={[styles.sep, { backgroundColor: palette.outlineVariant }]} />}
                   <TransactionItem transaction={t} category={catById.get(t.categoryId)} />
                 </View>
               ))}
@@ -120,7 +122,7 @@ export function TransactionsListScreen() {
 
       <Modal visible={filterOpen} animationType="slide" transparent onRequestClose={() => setFilterOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setFilterOpen(false)} />
-        <View style={styles.sheet}>
+        <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
             <ThemedText variant="headlineMd">Filters</ThemedText>
 
@@ -130,7 +132,11 @@ export function TransactionsListScreen() {
                 <Pressable
                   key={k}
                   onPress={() => setKind(k)}
-                  style={[styles.chip, kind === k && styles.chipActive]}
+                  style={[
+                    styles.chip,
+                    { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                    kind === k && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+                  ]}
                 >
                   <ThemedText variant="bodyBase" style={{ color: kind === k ? palette.onPrimary : palette.onSurface, fontWeight: '600' }}>
                     {k === 'all' ? 'All' : k === 'expense' ? 'Expenses' : 'Income'}
@@ -187,14 +193,13 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: spacing.containerMargin, paddingBottom: spacing.xl, gap: spacing.md },
   dayBlock: { gap: spacing.xs },
   dayHeader: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.xs },
-  sep: { height: 1, backgroundColor: palette.outlineVariant, marginLeft: spacing.md + 40 + spacing.md },
+  sep: { height: 1, marginLeft: spacing.md + 40 + spacing.md },
   center: { alignItems: 'center', paddingVertical: spacing.xl },
   statusCard: { marginHorizontal: spacing.containerMargin },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     position: 'absolute',
     left: 0, right: 0, bottom: 0,
-    backgroundColor: palette.surface,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
     maxHeight: '90%',
@@ -204,10 +209,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceContainerLowest,
   },
-  chipActive: { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
 });

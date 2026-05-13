@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getDb } from '@/storage/db';
@@ -53,7 +53,7 @@ export async function exportBackup(): Promise<string> {
   };
 
   const fileName = `rupeesafe-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  const path = `${FileSystem.Paths.document.uri}${fileName}`;
+  const path = `${FileSystem.documentDirectory}${fileName}`;
   await FileSystem.writeAsStringAsync(path, JSON.stringify(payload, null, 2));
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(path, { mimeType: 'application/json' });
@@ -182,7 +182,7 @@ export async function exportTransactionsCsv(start: string, end: string): Promise
     );
   }
   const fileName = `rupeesafe-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
-  const path = `${FileSystem.Paths.document.uri}${fileName}`;
+  const path = `${FileSystem.documentDirectory}${fileName}`;
   await FileSystem.writeAsStringAsync(path, lines.join('\n'));
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(path, { mimeType: 'text/csv' });

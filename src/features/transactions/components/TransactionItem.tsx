@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CategoryIcon, MoneyText, ThemedText } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import type { TransactionRow } from '@/features/transactions/repository';
 import type { Category } from '@/features/categories/repository';
 import { PAYMENT_MODE_LABELS } from '@/types';
@@ -14,6 +15,7 @@ interface Props {
 
 export function TransactionItem({ transaction, category }: Props) {
   const router = useRouter();
+  const { palette } = useTheme();
   const isIncome = transaction.kind === 'income';
   return (
     <Pressable
@@ -32,25 +34,12 @@ export function TransactionItem({ transaction, category }: Props) {
           {category?.name ?? 'Uncategorised'} · {PAYMENT_MODE_LABELS[transaction.paymentMode]} · {formatTimeLabel(transaction.occurredAt)}
         </ThemedText>
       </View>
-      <MoneyText
-        paise={transaction.amountPaise}
-        kind={transaction.kind}
-        signed
-        tone={isIncome ? 'positive' : 'default'}
-        size="base"
-      />
+      <MoneyText paise={transaction.amountPaise} kind={transaction.kind} signed tone={isIncome ? 'positive' : 'default'} size="base" />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    minHeight: 64,
-  },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, minHeight: 64 },
   body: { flex: 1, gap: 2 },
 });

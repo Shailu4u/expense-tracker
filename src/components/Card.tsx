@@ -1,13 +1,23 @@
 import { View, type ViewProps, StyleSheet } from 'react-native';
-import { elevation, palette, radius, spacing } from '@/theme/tokens';
+import { elevation, radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 interface Props extends ViewProps {
   padded?: boolean;
 }
 
 export function Card({ padded = true, style, children, ...rest }: Props) {
+  const { palette } = useTheme();
   return (
-    <View style={[styles.card, padded && styles.padded, style]} {...rest}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: palette.surfaceElevated, borderColor: palette.tabBorder },
+        padded && styles.padded,
+        style,
+      ]}
+      {...rest}
+    >
       {children}
     </View>
   );
@@ -15,10 +25,8 @@ export function Card({ padded = true, style, children, ...rest }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: palette.surfaceElevated,
     borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: palette.tabBorder,
     ...elevation.card,
   },
   padded: {

@@ -2,7 +2,8 @@ import { View, ScrollView, StyleSheet, type ViewProps } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSegments } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { AppFooterNav } from './AppFooterNav';
 
 interface Props extends ViewProps {
@@ -12,9 +13,10 @@ interface Props extends ViewProps {
 
 export function Screen({ scroll = false, padded = true, style, children, ...rest }: Props) {
   const segments = useSegments();
+  const { palette } = useTheme();
   const showFooter = segments[0] !== '(tabs)' && segments[0] !== '(onboarding)' && segments[0] !== 'lock';
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
+    <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       <Svg pointerEvents="none" style={StyleSheet.absoluteFillObject} viewBox="0 0 100 100" preserveAspectRatio="none">
         <Defs>
           <LinearGradient id="screenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -59,17 +61,8 @@ export function Screen({ scroll = false, padded = true, style, children, ...rest
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: palette.background,
-  },
-  scrollContent: {
-    paddingBottom: spacing.xl,
-  },
-  content: {
-    flex: 1,
-  },
-  footerSpacing: {
-    paddingBottom: 112,
-  },
+  root: { flex: 1 },
+  scrollContent: { paddingBottom: spacing.xl },
+  content: { flex: 1 },
+  footerSpacing: { paddingBottom: 112 },
 });

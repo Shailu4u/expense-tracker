@@ -1,5 +1,6 @@
 import { TextInput, View, StyleSheet, type TextInputProps } from 'react-native';
-import { palette, radius, spacing, typography } from '@/theme/tokens';
+import { radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { ThemedText } from './ThemedText';
 
 interface Props extends Omit<TextInputProps, 'style'> {
@@ -9,6 +10,7 @@ interface Props extends Omit<TextInputProps, 'style'> {
 }
 
 export function TextField({ label, error, rightSlot, ...rest }: Props) {
+  const { palette } = useTheme();
   return (
     <View style={styles.wrap}>
       {label && (
@@ -16,19 +18,18 @@ export function TextField({ label, error, rightSlot, ...rest }: Props) {
           {label.toUpperCase()}
         </ThemedText>
       )}
-      <View style={[styles.field, !!error && { borderColor: palette.error }]}>
+      <View style={[
+        styles.field,
+        { borderColor: error ? palette.error : palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+      ]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: palette.onSurface }]}
           placeholderTextColor={palette.outline}
           {...rest}
         />
         {rightSlot}
       </View>
-      {error && (
-        <ThemedText variant="bodySm" tone="error">
-          {error}
-        </ThemedText>
-      )}
+      {error && <ThemedText variant="bodySm" tone="error">{error}</ThemedText>}
     </View>
   );
 }
@@ -40,11 +41,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     borderRadius: radius.base,
-    backgroundColor: palette.surfaceContainerLowest,
     paddingHorizontal: spacing.md,
     minHeight: 48,
   },
-  input: { flex: 1, ...typography.bodyBase, color: palette.onSurface, paddingVertical: spacing.sm },
+  input: { flex: 1, ...typography.bodyBase, paddingVertical: spacing.sm },
 });

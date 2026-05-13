@@ -1,8 +1,10 @@
 import { Tabs } from 'expo-router';
-import { palette, radius, spacing, typography, elevation } from '@/theme/tokens';
+import { radius, spacing, typography, elevation } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { TabBarIcon } from '@/components/TabBarIcon';
 
 export default function TabsLayout() {
+  const { palette } = useTheme();
   return (
     <Tabs
       screenOptions={{
@@ -25,41 +27,11 @@ export default function TabsLayout() {
         tabBarLabelStyle: { ...typography.labelCaps, fontSize: 11 },
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name="home" color={color} focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="transactions"
-        options={{
-          title: 'Activity',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name="list" color={color} focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="add"
-        options={{
-          title: 'Add',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name="add" color={color} focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="budgets"
-        options={{
-          title: 'Budgets',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name="budget" color={color} focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="more"
-        options={{
-          title: 'More',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name="more" color={color} focused={focused} />,
-        }}
-      />
+      <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ color, focused }) => <TabBarIcon name="home" color={color} focused={focused} /> }} />
+      <Tabs.Screen name="transactions" options={{ title: 'Activity', tabBarIcon: ({ color, focused }) => <TabBarIcon name="list" color={color} focused={focused} /> }} />
+      <Tabs.Screen name="add" options={{ title: 'Add', tabBarIcon: ({ color, focused }) => <TabBarIcon name="add" color={color} focused={focused} /> }} />
+      <Tabs.Screen name="budgets" options={{ title: 'Budgets', tabBarIcon: ({ color, focused }) => <TabBarIcon name="budget" color={color} focused={focused} /> }} />
+      <Tabs.Screen name="more" options={{ title: 'More', tabBarIcon: ({ color, focused }) => <TabBarIcon name="more" color={color} focused={focused} /> }} />
     </Tabs>
   );
 }

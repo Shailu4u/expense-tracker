@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { View, StyleSheet, FlatList, Image, Pressable, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Card, Button } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useAllReceipts, useDeleteReceipt } from '../hooks';
 
 export function ReceiptsScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const { data: receipts = [] } = useAllReceipts();
   const remove = useDeleteReceipt();
   const [zoomUri, setZoomUri] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export function ReceiptsScreen() {
                 ]);
               }}
               onPress={() => setZoomUri(item.fileUri)}
-              style={styles.tile}
+              style={[styles.tile, { backgroundColor: palette.surfaceContainerLow }]}
               accessibilityLabel="Receipt photo"
             >
               <Image source={{ uri: item.fileUri }} style={styles.thumb} />
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: spacing.containerMargin, paddingTop: spacing.lg, gap: spacing.xs },
   emptyCard: { marginHorizontal: spacing.containerMargin, marginTop: spacing.md },
   grid: { padding: spacing.containerMargin, gap: spacing.xs },
-  tile: { flex: 1, aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden', backgroundColor: palette.surfaceContainerLow },
+  tile: { flex: 1, aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden' },
   thumb: { width: '100%', height: '100%' },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', alignItems: 'center', justifyContent: 'center' },
   modalImage: { width: '100%', height: '85%' },

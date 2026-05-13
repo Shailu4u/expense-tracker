@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Button, Card } from '@/components';
-import { palette, radius, spacing, typography } from '@/theme/tokens';
+import { radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import * as Settings from '@/features/settings/repository';
 
 export default function Setup() {
   const router = useRouter();
+  const { palette } = useTheme();
   const [day, setDay] = useState<number>(1);
   const [busy, setBusy] = useState(false);
 
@@ -14,7 +16,7 @@ export default function Setup() {
     setBusy(true);
     try {
       await Settings.update({ monthStartDay: day });
-      router.push('/(onboarding)/lock');
+      router.push('/(onboarding)/permissions');
     } finally {
       setBusy(false);
     }
@@ -39,11 +41,15 @@ export default function Setup() {
               accessibilityRole="button"
               accessibilityLabel={`Day ${d}`}
               onPress={() => setDay(d)}
-              style={[styles.chip, day === d && styles.chipActive]}
+              style={[
+                styles.chip,
+                { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                day === d && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+              ]}
             >
               <ThemedText
                 variant="bodyBase"
-                style={[styles.chipText, day === d && styles.chipTextActive]}
+                style={[styles.chipText, day === d && { color: palette.onPrimary }]}
               >
                 {d}
               </ThemedText>
@@ -73,16 +79,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceContainerLowest,
-  },
-  chipActive: {
-    backgroundColor: palette.primaryContainer,
-    borderColor: palette.primaryContainer,
   },
   chipText: { ...typography.bodyBase, fontWeight: '600' },
-  chipTextActive: { color: palette.onPrimary },
   cta: { paddingTop: spacing.xl, paddingBottom: spacing.lg },
 });

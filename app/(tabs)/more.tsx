@@ -2,7 +2,8 @@ import { useRouter, type Href } from 'expo-router';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Screen, ThemedText, Card, GradientPanel } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 interface Item {
   label: string;
@@ -23,11 +24,13 @@ const ITEMS: Item[] = [
 
 export default function MoreScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
+
   return (
     <Screen scroll>
       <GradientPanel style={styles.header}>
         <ThemedText variant="labelCaps" tone="inverse">MORE</ThemedText>
-        <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>Everything beyond the daily ledger.</ThemedText>
+        <ThemedText variant="headlineMd" tone="inverse">Everything beyond the daily ledger.</ThemedText>
         <ThemedText variant="bodySm" tone="inverse">Reports, recurring, settings, and backup.</ThemedText>
       </GradientPanel>
       <Card>
@@ -40,11 +43,11 @@ export default function MoreScreen() {
             android_ripple={{ color: palette.outlineVariant }}
             style={({ pressed }) => [
               styles.row,
-              idx > 0 && styles.rowDivider,
+              idx > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.outlineVariant },
               pressed && { backgroundColor: palette.surfaceContainerLow },
             ]}
           >
-            <View style={styles.iconBubble}>
+            <View style={[styles.iconBubble, { backgroundColor: palette.tabActive }]}>
               <MaterialCommunityIcons name={it.icon} size={22} color={palette.primary} />
             </View>
             <View style={{ flex: 1 }}>
@@ -61,20 +64,6 @@ export default function MoreScreen() {
 
 const styles = StyleSheet.create({
   header: { marginTop: spacing.lg, marginBottom: spacing.md },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 56,
-  },
-  rowDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.outlineVariant },
-  iconBubble: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.full,
-    backgroundColor: palette.tabActive,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm, minHeight: 56 },
+  iconBubble: { width: 44, height: 44, borderRadius: radius.full, alignItems: 'center', justifyContent: 'center' },
 });

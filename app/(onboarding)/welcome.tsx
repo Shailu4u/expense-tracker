@@ -1,7 +1,8 @@
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Button, Card } from '@/components';
-import { spacing, palette } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 export default function Welcome() {
   const router = useRouter();
@@ -32,9 +33,10 @@ export default function Welcome() {
 }
 
 function Bullet({ text }: { text: string }) {
+  const { palette } = useTheme();
   return (
     <View style={styles.bullet}>
-      <View style={styles.dot} />
+      <View style={[styles.dot, { backgroundColor: palette.primary }]} />
       <ThemedText variant="bodyBase">{text}</ThemedText>
     </View>
   );
@@ -45,5 +47,5 @@ const styles = StyleSheet.create({
   card: { marginTop: spacing.xl, gap: spacing.sm },
   cta: { marginTop: 'auto', paddingTop: spacing.xl, paddingBottom: spacing.lg },
   bullet: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: palette.primary },
+  dot: { width: 6, height: 6, borderRadius: 3 },
 });

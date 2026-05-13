@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, ActivityIndicator, type PressableProps, type ViewStyle, type StyleProp, type TextStyle } from 'react-native';
-import { palette, radius, spacing, typography } from '@/theme/tokens';
+import { radius, spacing, typography, type Palette } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -22,6 +23,7 @@ export function Button({
   style,
   ...rest
 }: Props) {
+  const { palette } = useTheme();
   const isDisabled = disabled || loading;
   return (
     <Pressable
@@ -33,7 +35,7 @@ export function Button({
       style={({ pressed }) => [
         styles.base,
         fullWidth && styles.fullWidth,
-        styleFor(variant),
+        styleFor(variant, palette),
         pressed && !isDisabled && { opacity: 0.85 },
         isDisabled && { opacity: 0.5 },
         style,
@@ -41,18 +43,18 @@ export function Button({
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={textColorFor(variant)} />
+        <ActivityIndicator color={textColorFor(variant, palette)} />
       ) : (
         <>
           {leadingIcon}
-          <Text style={[styles.label, { color: textColorFor(variant) }]}>{label}</Text>
+          <Text style={[styles.label, { color: textColorFor(variant, palette) }]}>{label}</Text>
         </>
       )}
     </Pressable>
   );
 }
 
-function styleFor(v: Variant): ViewStyle {
+function styleFor(v: Variant, palette: Palette): ViewStyle {
   switch (v) {
     case 'primary':
       return { backgroundColor: palette.primaryContainer };
@@ -69,7 +71,7 @@ function styleFor(v: Variant): ViewStyle {
   }
 }
 
-function textColorFor(v: Variant): string {
+function textColorFor(v: Variant, palette: Palette): string {
   switch (v) {
     case 'primary':
       return palette.onPrimary;

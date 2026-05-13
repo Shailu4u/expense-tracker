@@ -11,7 +11,8 @@ import {
   CategoryIcon,
   GradientPanel,
 } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { budgetCycleRange } from '@/utils/date';
 import { formatINR } from '@/utils/money';
 import {
@@ -33,6 +34,7 @@ type FilterOption = (typeof FILTER_OPTIONS)[number]['value'];
 
 export function HomeScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const { data: settings } = useSettings();
   const monthStartDay = settings?.monthStartDay ?? 1;
 
@@ -122,7 +124,7 @@ export function HomeScreen() {
 
         <Modal visible={filterVisible} transparent animationType="fade">
           <Pressable style={styles.modalOverlay} onPress={() => setFilterVisible(false)}>
-            <View style={styles.dropdownMenu}>
+            <View style={[styles.dropdownMenu, { backgroundColor: palette.surface }]}>
               {FILTER_OPTIONS.map((o) => (
                 <Pressable
                   key={o.value}
@@ -144,7 +146,7 @@ export function HomeScreen() {
           </Pressable>
         </Modal>
 
-        <GradientPanel style={styles.heroCard}>
+        <GradientPanel style={[styles.heroCard, { backgroundColor: palette.primary }]}>
           <ThemedText variant="labelCaps" tone="inverse">
             {filter === 'month'
               ? 'SPENT THIS MONTH'
@@ -152,7 +154,7 @@ export function HomeScreen() {
                 ? 'SPENT LAST 1 MONTH'
                 : 'SPENT LAST 1 WEEK'}
           </ThemedText>
-          <MoneyText paise={spent} size="display" style={{ color: palette.onPrimary }} />
+          <MoneyText paise={spent} size="display" style={{ color: palette.inverseOnSurface }} />
           <ThemedText variant="bodySm" tone="inverse">
             Earned {formatINR(earned)} · Net {formatINR(earned - spent)}
           </ThemedText>
@@ -182,7 +184,7 @@ export function HomeScreen() {
                 <ThemedText
                   variant="bodySm"
                   style={{
-                    color: used >= 1 ? palette.errorContainer : palette.onPrimary,
+                    color: used >= 1 ? palette.errorContainer : palette.inverseOnSurface,
                     flexShrink: 1,
                     textAlign: 'right',
                   }}
@@ -228,8 +230,13 @@ export function HomeScreen() {
             {top.map((row, i) => {
               const c = catById.get(row.categoryId);
               return (
-                <View key={row.categoryId}>
-                  {i > 0 && <View style={styles.sep} />}
+                <Pressable
+                  key={row.categoryId}
+                  onPress={() => router.push({ pathname: '/(tabs)/transactions', params: { categoryId: row.categoryId } })}
+                  android_ripple={{ color: palette.outlineVariant }}
+                  style={({ pressed }) => pressed && { opacity: 0.7 }}
+                >
+                  {i > 0 && <View style={[styles.sep, { backgroundColor: palette.outlineVariant }]} />}
                   <View style={styles.catRow}>
                     <CategoryIcon
                       icon={c?.icon ?? 'category'}
@@ -246,7 +253,7 @@ export function HomeScreen() {
                     </View>
                     <MoneyText paise={row.totalPaise} />
                   </View>
-                </View>
+                </Pressable>
               );
             })}
           </Card>
@@ -272,7 +279,7 @@ export function HomeScreen() {
           <Card padded={false}>
             {recents.slice(0, 5).map((t, i) => (
               <View key={t.id}>
-                {i > 0 && <View style={styles.sep} />}
+                {i > 0 && <View style={[styles.sep, { backgroundColor: palette.outlineVariant }]} />}
                 <TransactionItem transaction={t} category={catById.get(t.categoryId)} />
               </View>
             ))}
@@ -295,7 +302,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  heroCard: { gap: spacing.sm, paddingHorizontal: spacing.md, backgroundColor: palette.primary },
+  heroCard: { gap: spacing.sm, paddingHorizontal: spacing.md },
   budgetBlock: { gap: spacing.xs, marginTop: spacing.sm },
   budgetTrackBg: {
     height: 8,
@@ -314,7 +321,6 @@ const styles = StyleSheet.create({
   },
   sep: {
     height: 1,
-    backgroundColor: palette.outlineVariant,
     marginLeft: spacing.md + 36 + spacing.md,
   },
   catRow: {
@@ -333,7 +339,6 @@ const styles = StyleSheet.create({
     paddingRight: spacing.containerMargin,
   },
   dropdownMenu: {
-    backgroundColor: palette.surface,
     borderRadius: radius.md,
     padding: spacing.xs,
     minWidth: 160,

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, ThemedText, Button, Card } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import * as Settings from '@/features/settings/repository';
 import * as Security from '@/services/security';
 import { nowISO } from '@/utils/date';
@@ -12,6 +13,7 @@ type Choice = 'none' | 'pin' | 'biometric' | 'pin_or_biometric';
 
 export default function Lock() {
   const router = useRouter();
+  const { palette } = useTheme();
   const qc = useQueryClient();
   const [choice, setChoice] = useState<Choice>('none');
   const [pin, setPin] = useState('');
@@ -58,12 +60,14 @@ export default function Lock() {
           desc="I'll add it later"
           active={choice === 'none'}
           onPress={() => setChoice('none')}
+          primaryColor={palette.primary}
         />
         <Choice
           label="PIN"
           desc="4 to 8 digits"
           active={choice === 'pin'}
           onPress={() => setChoice('pin')}
+          primaryColor={palette.primary}
         />
         {bioAvailable && (
           <>
@@ -72,12 +76,14 @@ export default function Lock() {
               desc="Fingerprint or face"
               active={choice === 'biometric'}
               onPress={() => setChoice('biometric')}
+              primaryColor={palette.primary}
             />
             <Choice
               label="PIN + biometric"
               desc="Most flexible"
               active={choice === 'pin_or_biometric'}
               onPress={() => setChoice('pin_or_biometric')}
+              primaryColor={palette.primary}
             />
           </>
         )}
@@ -93,7 +99,7 @@ export default function Lock() {
               keyboardType="number-pad"
               secureTextEntry
               maxLength={8}
-              style={styles.input}
+              style={[styles.input, { borderColor: palette.outlineVariant, color: palette.onSurface }]}
               accessibilityLabel="PIN"
             />
             <TextInput
@@ -104,7 +110,7 @@ export default function Lock() {
               keyboardType="number-pad"
               secureTextEntry
               maxLength={8}
-              style={styles.input}
+              style={[styles.input, { borderColor: palette.outlineVariant, color: palette.onSurface }]}
               accessibilityLabel="Confirm PIN"
             />
             {!pinValid && pin.length > 0 && (
@@ -134,19 +140,18 @@ function Choice({
   desc,
   active,
   onPress,
+  primaryColor,
 }: {
   label: string;
   desc: string;
   active: boolean;
   onPress: () => void;
+  primaryColor: string;
 }) {
   return (
     <Card
       padded={false}
-      style={{
-        ...styles.choice,
-        ...(active ? styles.choiceActive : {}),
-      }}
+      style={[styles.choice, active && { borderColor: primaryColor, borderWidth: 2 }]}
     >
       <View style={{ flex: 1, padding: spacing.md }}>
         <ThemedText variant="bodyBase" style={{ fontWeight: '600' }}>
@@ -172,22 +177,16 @@ const styles = StyleSheet.create({
   pinBlock: { gap: spacing.sm, marginTop: spacing.md },
   input: {
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     borderRadius: radius.base,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: 18,
     letterSpacing: 4,
     textAlign: 'center',
-    color: palette.onSurface,
   },
   cta: { paddingTop: spacing.xl, paddingBottom: spacing.lg },
   choice: {
     flexDirection: 'row',
     alignItems: 'stretch',
-  },
-  choiceActive: {
-    borderColor: palette.primary,
-    borderWidth: 2,
   },
 });

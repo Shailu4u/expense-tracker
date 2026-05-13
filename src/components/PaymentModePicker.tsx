@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { palette, radius, spacing, typography } from '@/theme/tokens';
+import { radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { PAYMENT_MODES, PAYMENT_MODE_LABELS, type PaymentMode } from '@/types';
 
 interface Props {
@@ -9,12 +10,9 @@ interface Props {
 }
 
 export function PaymentModePicker({ value, onChange }: Props) {
+  const { palette } = useTheme();
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.row}
-    >
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
       {PAYMENT_MODES.map((m) => {
         const active = value === m;
         return (
@@ -24,14 +22,15 @@ export function PaymentModePicker({ value, onChange }: Props) {
             accessibilityRole="button"
             accessibilityLabel={PAYMENT_MODE_LABELS[m]}
             accessibilityState={{ selected: active }}
-            style={[styles.chip, active && styles.chipActive]}
+            style={[
+              styles.chip,
+              { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+              active && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+            ]}
           >
             <ThemedText
               variant="bodySm"
-              style={{
-                ...styles.chipText,
-                ...(active ? { color: palette.onPrimary, fontWeight: '600' } : {}),
-              }}
+              style={[styles.chipText, active && { color: palette.onPrimary, fontWeight: '600' }]}
             >
               {PAYMENT_MODE_LABELS[m]}
             </ThemedText>
@@ -51,14 +50,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceContainerLowest,
-  },
-  chipActive: {
-    backgroundColor: palette.primaryContainer,
-    borderColor: palette.primaryContainer,
   },
   chipText: { ...typography.bodySm },
 });

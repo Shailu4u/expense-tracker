@@ -10,7 +10,8 @@ import {
   CategoryPicker,
   PaymentModePicker,
 } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useCategoriesForKind } from '@/features/categories/hooks';
 import { useCreateRecurring, useUpdateRecurring, useRecurringById } from '../hooks';
 import { rupeesToPaise } from '@/utils/money';
@@ -19,6 +20,7 @@ import type { PaymentMode, TransactionKind } from '@/types';
 
 export function RecurringEditScreen() {
   const router = useRouter();
+  const { palette } = useTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const editing = id && id !== 'new' ? id : null;
   const { data: existing } = useRecurringById(editing ?? undefined);
@@ -101,7 +103,11 @@ export function RecurringEditScreen() {
             <Pressable
               key={k}
               onPress={() => setKind(k)}
-              style={[styles.kindChip, kind === k && styles.kindChipActive]}
+              style={[
+                styles.kindChip,
+                { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                kind === k && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+              ]}
             >
               <ThemedText
                 variant="bodyBase"
@@ -132,7 +138,11 @@ export function RecurringEditScreen() {
             <Pressable
               key={c}
               onPress={() => setCadence(c)}
-              style={[styles.kindChip, cadence === c && styles.kindChipActive]}
+              style={[
+                styles.kindChip,
+                { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                cadence === c && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+              ]}
             >
               <ThemedText
                 variant="bodyBase"
@@ -174,11 +184,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: palette.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceContainerLowest,
   },
-  kindChipActive: { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
   row: { flexDirection: 'row', gap: spacing.sm },
 });

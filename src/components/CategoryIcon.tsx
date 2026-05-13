@@ -1,6 +1,7 @@
 import { View, StyleSheet, type ViewStyle, type StyleProp } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { palette, radius } from '@/theme/tokens';
+import { radius } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 interface Props {
   icon: string; // material symbol name; will be best-effort mapped
@@ -32,9 +33,9 @@ const ICON_MAP: Record<string, keyof typeof MaterialIcons.glyphMap> = {
   trending_down: 'trending-down',
 };
 
-function tint(hex: string, alpha = 0.15): string {
+function tint(hex: string, fallback: string, alpha = 0.15): string {
   const m = hex.match(/^#([0-9a-f]{6})$/i);
-  if (!m) return palette.surfaceContainer;
+  if (!m) return fallback;
   const v = parseInt(m[1]!, 16);
   const r = (v >> 16) & 255;
   const g = (v >> 8) & 255;
@@ -43,13 +44,14 @@ function tint(hex: string, alpha = 0.15): string {
 }
 
 export function CategoryIcon({ icon, color, size = 40, style }: Props) {
+  const { palette } = useTheme();
   const symbol = ICON_MAP[icon] ?? 'category';
   const inner = Math.round(size * 0.55);
   return (
     <View
       style={[
         styles.bubble,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: tint(color, 0.18) },
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: tint(color, palette.surfaceContainer, 0.18) },
         style,
       ]}
     >

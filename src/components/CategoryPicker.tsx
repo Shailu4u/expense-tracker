@@ -2,7 +2,8 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { ThemedText } from './ThemedText';
 import { CategoryIcon } from './CategoryIcon';
 import type { Category } from '@/features/categories/repository';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 
 interface Props {
   categories: Category[];
@@ -11,12 +12,9 @@ interface Props {
 }
 
 export function CategoryPicker({ categories, value, onChange }: Props) {
+  const { palette } = useTheme();
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.row}
-    >
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
       {categories.map((c) => {
         const active = c.id === value;
         return (
@@ -33,10 +31,7 @@ export function CategoryPicker({ categories, value, onChange }: Props) {
             </View>
             <ThemedText
               variant="bodySm"
-              style={{
-                ...styles.label,
-                ...(active ? { color: palette.primary, fontWeight: '600' } : {}),
-              }}
+              style={[styles.label, active && { color: palette.primary, fontWeight: '600' }]}
               numberOfLines={1}
             >
               {c.name}

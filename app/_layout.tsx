@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { palette } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useInitLock } from '@/features/security/hooks';
 import { useLockStore } from '@/features/security/lockStore';
@@ -13,6 +13,7 @@ import { configureChannel } from '@/services/notifications';
 import * as RecurringRepo from '@/features/recurring/repository';
 import { AppState } from 'react-native';
 import { useSmsAutoDetect } from '@/features/sms-import/auto-detect';
+import { useInitTheme } from '@/features/theme/hooks';
 
 export default function RootLayout() {
   const client = useMemo(
@@ -35,7 +36,6 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <QueryClientProvider client={client}>
-          <StatusBar style="dark" backgroundColor={palette.background} />
           <RootGuard />
         </QueryClientProvider>
       </SafeAreaProvider>
@@ -48,7 +48,10 @@ function RootGuard() {
   const isLocked = useLockStore((s) => s.isLocked);
   const router = useRouter();
   const segments = useSegments();
+  const { resolved, palette: p } = useTheme();
+  const statusBarStyle = resolved === 'dark' ? 'light' : 'dark';
 
+  useInitTheme();
   useSmsAutoDetect();
 
   useEffect(() => {
@@ -85,23 +88,26 @@ function RootGuard() {
 
   if (!ready) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator color={palette.primary} />
+      <View style={[styles.center, { backgroundColor: p.background }]}>
+        <ActivityIndicator color={p.primary} />
       </View>
     );
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: palette.background },
-      }}
-    />
+    <>
+      <StatusBar style={statusBarStyle} backgroundColor={p.background} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: p.background },
+        }}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: palette.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: palette.background },
+  root: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

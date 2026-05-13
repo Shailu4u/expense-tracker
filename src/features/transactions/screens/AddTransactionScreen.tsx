@@ -12,7 +12,8 @@ import {
   TextField,
   MoneyText,
 } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { useCategoriesForKind } from '@/features/categories/hooks';
 import {
   useCreateTransaction,
@@ -27,6 +28,7 @@ import type { PaymentMode, TransactionKind } from '@/types';
 
 export default function AddOrEditTransaction() {
   const router = useRouter();
+  const { palette } = useTheme();
   const params = useLocalSearchParams<{ id?: string; kind?: TransactionKind }>();
   const editingId = params.id ?? null;
   const { data: existing } = useTransaction(editingId ?? undefined);
@@ -110,7 +112,7 @@ export default function AddOrEditTransaction() {
           <ThemedText variant="labelCaps" tone="muted">
             {editingId ? 'EDIT TRANSACTION' : 'NEW TRANSACTION'}
           </ThemedText>
-          <View style={styles.kindToggle}>
+          <View style={[styles.kindToggle, { backgroundColor: palette.surfaceContainer }]}>
             <KindButton label="Expense" active={kind === 'expense'} onPress={() => setKind('expense')} />
             <KindButton label="Income" active={kind === 'income'} onPress={() => setKind('income')} />
           </View>
@@ -145,7 +147,7 @@ export default function AddOrEditTransaction() {
                   key={m}
                   onPress={() => setMerchant(m)}
                   accessibilityRole="button"
-                  style={styles.recentChip}
+                  style={[styles.recentChip, { backgroundColor: palette.surfaceContainer }]}
                 >
                   <ThemedText variant="bodySm" tone="muted">{m}</ThemedText>
                 </Pressable>
@@ -195,19 +197,17 @@ export default function AddOrEditTransaction() {
 }
 
 function KindButton({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  const { palette } = useTheme();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
-      style={[styles.kindBtn, active && styles.kindBtnActive]}
+      style={[styles.kindBtn, active && { backgroundColor: palette.primaryContainer }]}
     >
       <ThemedText
         variant="bodyBase"
-        style={{
-          fontWeight: '600',
-          color: active ? palette.onPrimary : palette.onSurfaceVariant,
-        }}
+        style={{ fontWeight: '600', color: active ? palette.onPrimary : palette.onSurfaceVariant }}
       >
         {label}
       </ThemedText>
@@ -220,7 +220,6 @@ const styles = StyleSheet.create({
   header: { paddingTop: spacing.lg, gap: spacing.sm, alignItems: 'center' },
   kindToggle: {
     flexDirection: 'row',
-    backgroundColor: palette.surfaceContainer,
     borderRadius: radius.full,
     padding: 4,
   },
@@ -231,7 +230,6 @@ const styles = StyleSheet.create({
     minWidth: 110,
     alignItems: 'center',
   },
-  kindBtnActive: { backgroundColor: palette.primaryContainer },
   amountDisplay: { paddingVertical: spacing.md },
   section: { gap: spacing.xs },
   recentsRow: { gap: spacing.xs, paddingTop: spacing.xs },
@@ -239,7 +237,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: radius.full,
-    backgroundColor: palette.surfaceContainer,
   },
   keypadCard: { paddingVertical: spacing.sm },
   cta: { paddingTop: spacing.sm },

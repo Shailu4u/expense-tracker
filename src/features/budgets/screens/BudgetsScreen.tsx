@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Screen, ThemedText, Card, MoneyText, Button, CategoryIcon, TextField, GradientPanel } from '@/components';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import { budgetCycleRange } from '@/utils/date';
 import { formatINR, rupeesToPaise } from '@/utils/money';
 import { useBudgetsForMonth, useUpsertBudget, useDeleteBudget } from '../hooks';
@@ -27,6 +28,7 @@ export function availableBudgetCategories(categories: Category[], budgets: Budge
 }
 
 export function BudgetsScreen() {
+  const { palette } = useTheme();
   const { data: settings } = useSettings();
   const monthStartDay = settings?.monthStartDay ?? 1;
   const range = useMemo(() => budgetCycleRange(new Date(), monthStartDay), [monthStartDay]);
@@ -86,7 +88,7 @@ export function BudgetsScreen() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         <GradientPanel style={styles.headerCard}>
           <ThemedText variant="labelCaps" tone="inverse">BUDGETS</ThemedText>
-          <ThemedText variant="headlineMd" style={{ color: palette.onPrimary }}>
+          <ThemedText variant="headlineMd" tone="inverse">
             Plan the month with softer guardrails.
           </ThemedText>
           <ThemedText variant="bodySm" tone="inverse">
@@ -159,7 +161,7 @@ export function BudgetsScreen() {
             );
           })}
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: palette.outlineVariant }]} />
           <ThemedText variant="labelCaps" tone="muted">ADD A CATEGORY BUDGET</ThemedText>
           {availableCategories.length === 0 ? (
             <ThemedText variant="bodySm" tone="muted">
@@ -219,13 +221,14 @@ function BudgetRow({
 }
 
 function BudgetTrack({ spent, limit }: { spent: number; limit: number }) {
+  const { palette } = useTheme();
   const used = Math.min(spent / Math.max(limit, 1), 1);
   const overBy = spent - limit;
   const tone: 'muted' | 'error' = used >= 1 ? 'error' : 'muted';
 
   return (
     <View>
-      <View style={styles.track}>
+      <View style={[styles.track, { backgroundColor: palette.surfaceContainerHigh }]}>
         <View
           style={[
             styles.trackFill,
@@ -253,7 +256,6 @@ const styles = StyleSheet.create({
   budgetHeadRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   track: {
     height: 8,
-    backgroundColor: palette.surfaceContainerHigh,
     borderRadius: radius.full,
     overflow: 'hidden',
     marginVertical: spacing.xs,
@@ -266,7 +268,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.sm,
   },
-  divider: { height: 1, backgroundColor: palette.outlineVariant, marginVertical: spacing.sm },
+  divider: { height: 1, marginVertical: spacing.sm },
   addCatRow: {
     flexDirection: 'row',
     alignItems: 'center',

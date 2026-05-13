@@ -1,7 +1,8 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Platform, View, StyleSheet, FlatList, Alert } from 'react-native';
 import { Screen, ThemedText, Card, Button, MoneyText, CategoryIcon, CategoryPicker } from '@/components';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/features/theme/themeStore';
 import * as SmsRepo from '../repository';
 import { usePendingSms, useImportSms, useUpdateSmsCategory, useRejectSms } from '../hooks';
 import { useCategories } from '@/features/categories/hooks';
@@ -123,6 +124,7 @@ interface Props {
 }
 
 const ReviewCard = memo(function ReviewCard({ item, categories }: Props) {
+  const { palette } = useTheme();
   const updateCategory = useUpdateSmsCategory();
   const reject = useRejectSms();
   const cats = (categories ?? []).filter((c) =>
