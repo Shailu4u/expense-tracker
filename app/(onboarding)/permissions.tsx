@@ -70,7 +70,7 @@ export default function Permissions() {
 
   function triggerBackgroundImport() {
     setImporting(true);
-    SmsRepo.importSinceLast(90)
+    SmsRepo.importSinceLast(365)
       .catch(() => {})
       .finally(() => setImporting(false));
   }

@@ -201,7 +201,7 @@ export async function getLastReceivedAtMs(): Promise<number | null> {
 // against clock skew between the SMS provider and the device clock; dedupe
 // hashes protect against re-imports inside that buffer. When no SMS has been
 // imported yet, falls back to `defaultDays`.
-export async function importSinceLast(defaultDays = 30): Promise<{
+export async function importSinceLast(defaultDays = 365): Promise<{
   scanned: number;
   parsed: number;
   newRows: number;
