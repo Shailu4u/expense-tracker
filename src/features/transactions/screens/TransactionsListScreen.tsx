@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Modal, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen, ThemedText, Card, TextField, Button, PaymentModePicker, CategoryPicker } from '@/components';
@@ -20,6 +20,16 @@ export function TransactionsListScreen() {
   const [kind, setKind] = useState<TransactionKind | 'all'>('all');
   const [paymentMode, setPaymentMode] = useState<PaymentMode | null>(null);
   const [categoryId, setCategoryId] = useState<string | null>(params.categoryId ?? null);
+
+  // Tab screens stay mounted — params update reactively but useState initializers
+  // only run once, so we sync incoming params into local state on each change.
+  useEffect(() => {
+    if (params.categoryId !== undefined) setCategoryId(params.categoryId || null);
+  }, [params.categoryId]);
+
+  useEffect(() => {
+    if (params.search !== undefined) setSearch(params.search || '');
+  }, [params.search]);
   const range = useMemo(() => {
     const start = new Date();
     start.setMonth(start.getMonth() - 12);

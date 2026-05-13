@@ -3,6 +3,7 @@ import * as Crypto from 'expo-crypto';
 import { getDb } from '@/storage/db';
 import { newId } from '@/utils/id';
 import { parseSms, type ParsedTransaction } from './parsers';
+import { detectCategoryName } from './categorize';
 import * as TransactionRepo from '@/features/transactions/repository';
 import * as SmsServiceIos from '@/services/sms.ios';
 import type { SmsRecord } from '@/services/types';
@@ -54,9 +55,24 @@ async function hashSms(sender: string, body: string, receivedAt: string): Promis
 
 type Db = Awaited<ReturnType<typeof getDb>>;
 
+async function findCategoryIdByName(
+  name: string,
+  kind: 'expense' | 'income',
+  db: Db,
+): Promise<string | null> {
+  const row = await db.getFirstAsync<{ id: string }>(
+    `SELECT id FROM categories
+     WHERE name = ? AND hidden_at IS NULL AND (kind = ? OR kind = 'both')
+     LIMIT 1`,
+    [name, kind],
+  );
+  return row?.id ?? null;
+}
+
 async function findDefaultCategoryId(
   kind: 'expense' | 'income',
   merchant: string | null,
+  body: string,
   db: Db,
 ): Promise<string | null> {
   // 1. Learned rule: if the user has previously categorised this merchant,
@@ -71,13 +87,24 @@ async function findDefaultCategoryId(
     if (rule && (rule.kind === kind || rule.kind === 'both')) return rule.id;
   }
 
+  // 2. Merchant pattern detection: map well-known Indian brands (Swiggy,
+  //    Blinkit, Uber, PharmEasy, IRCTC, BESCOM, Bajaj Finserv, …) to
+  //    their seeded category. Runs against both the parsed merchant and
+  //    the raw body so it still works when the merchant came out empty.
+  const detected = detectCategoryName(merchant, body, kind);
+  if (detected) {
+    const id = await findCategoryIdByName(detected, kind, db);
+    if (id) return id;
+  }
+
+  // 3. Fallback to the kind's "Other" bucket.
   const targetName = kind === 'income' ? 'Other Income' : 'Other';
   const exact = await db.getFirstAsync<{ id: string }>(
     'SELECT id FROM categories WHERE name = ? AND hidden_at IS NULL LIMIT 1',
     [targetName],
   );
   if (exact) return exact.id;
-  // Fallback: any visible category matching the kind.
+  // Last resort: any visible category matching the kind.
   const fallback = await db.getFirstAsync<{ id: string }>(
     `SELECT id FROM categories
      WHERE hidden_at IS NULL AND (kind = ? OR kind = 'both')
@@ -111,7 +138,7 @@ async function ingestRecord(
   // Auto-create the transaction with the default "Other" category. The user
   // can change the category or reject from the SMS Import screen — until then
   // the transaction is already live in the activity list.
-  const defaultCategoryId = await findDefaultCategoryId(parsed.kind, parsed.merchant, db);
+  const defaultCategoryId = await findDefaultCategoryId(parsed.kind, parsed.merchant, rec.body, db);
   let txnId: string | null = null;
   if (defaultCategoryId) {
     const txn = await TransactionRepo.create({
