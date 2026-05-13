@@ -41,11 +41,11 @@ export default function Permissions() {
     }
 
     const camStatus = await ImagePicker.getCameraPermissionsAsync();
-    next.camera = camStatus.granted ? 'granted' : 'unknown';
+    next.camera = camStatus.granted ? 'granted' : (camStatus.canAskAgain ? 'unknown' : 'denied');
 
     const Notifications = await import('expo-notifications');
     const notifStatus = await Notifications.getPermissionsAsync();
-    next.notifications = notifStatus.granted ? 'granted' : 'unknown';
+    next.notifications = notifStatus.granted ? 'granted' : (notifStatus.canAskAgain ? 'unknown' : 'denied');
 
     setPerms(next);
   }

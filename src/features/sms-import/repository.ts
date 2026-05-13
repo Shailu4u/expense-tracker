@@ -144,7 +144,7 @@ async function ingestRecord(
     const txn = await TransactionRepo.create({
       kind: parsed.kind,
       amountPaise: parsed.amountPaise,
-      occurredAt: parsed.occurredAt ?? new Date().toISOString(),
+      occurredAt: parsed.occurredAt ?? rec.receivedAt,
       categoryId: defaultCategoryId,
       paymentMode: parsed.paymentMode,
       merchant: parsed.merchant,

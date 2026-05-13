@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import {
   Screen,
   ThemedText,
@@ -47,15 +47,44 @@ export default function AddOrEditTransaction() {
   const update = useUpdateTransaction();
 
   useEffect(() => {
-    if (!existing) return;
-    setKind(existing.kind);
-    setAmount(String(existing.amountPaise / 100));
-    setCategoryId(existing.categoryId);
-    setPaymentMode(existing.paymentMode);
-    setMerchant(existing.merchant ?? '');
-    setNotes(existing.notes ?? '');
-    setOccurredAt(existing.occurredAt);
-  }, [existing]);
+    if (editingId) {
+      if (!existing) return;
+      setKind(existing.kind);
+      setAmount(String(existing.amountPaise / 100));
+      setCategoryId(existing.categoryId);
+      setPaymentMode(existing.paymentMode);
+      setMerchant(existing.merchant ?? '');
+      setNotes(existing.notes ?? '');
+      setOccurredAt(existing.occurredAt);
+    } else {
+      // No id — reset to a blank new transaction so stale edit data is cleared.
+      setKind((params.kind as TransactionKind) ?? 'expense');
+      setAmount('');
+      setCategoryId(null);
+      setPaymentMode('upi');
+      setMerchant('');
+      setNotes('');
+      setOccurredAt(nowISO());
+    }
+  }, [editingId, existing, params.kind]);
+
+  // Safety net: when the user taps the Add tab from the footer, Expo Router's
+  // tab navigator may keep the previous ?id= param in the URL, so the
+  // editingId-based reset above won't fire. This focus effect re-asserts a
+  // blank form whenever the screen is focused without an id param.
+  useFocusEffect(
+    useCallback(() => {
+      if (!editingId) {
+        setKind((params.kind as TransactionKind) ?? 'expense');
+        setAmount('');
+        setCategoryId(null);
+        setPaymentMode('upi');
+        setMerchant('');
+        setNotes('');
+        setOccurredAt(nowISO());
+      }
+    }, [editingId, params.kind]),
+  );
 
   // default-select first category when picker loads
   useEffect(() => {

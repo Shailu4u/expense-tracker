@@ -12,6 +12,54 @@ import { formatINR } from '@/utils/money';
 import type { TransactionRow } from '../repository';
 import type { PaymentMode, TransactionKind } from '@/types';
 
+type DatePreset = 'today' | 'week' | 'month' | 'last_month' | 'quarter' | 'year';
+
+const DATE_PRESETS: { value: DatePreset; label: string }[] = [
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'This week' },
+  { value: 'month', label: 'This month' },
+  { value: 'last_month', label: 'Last month' },
+  { value: 'quarter', label: 'Last 3 months' },
+  { value: 'year', label: 'Last 12 months' },
+];
+
+function getPresetRange(preset: DatePreset): { start: string; end: string } {
+  const now = new Date();
+  const end = now.toISOString();
+  switch (preset) {
+    case 'today': {
+      const s = new Date(now);
+      s.setHours(0, 0, 0, 0);
+      return { start: s.toISOString(), end };
+    }
+    case 'week': {
+      const s = new Date(now);
+      s.setDate(now.getDate() - 7);
+      return { start: s.toISOString(), end };
+    }
+    case 'month': {
+      const s = new Date(now.getFullYear(), now.getMonth(), 1);
+      return { start: s.toISOString(), end };
+    }
+    case 'last_month': {
+      const s = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const e = new Date(now.getFullYear(), now.getMonth(), 1);
+      return { start: s.toISOString(), end: e.toISOString() };
+    }
+    case 'quarter': {
+      const s = new Date(now);
+      s.setMonth(now.getMonth() - 3);
+      return { start: s.toISOString(), end };
+    }
+    case 'year':
+    default: {
+      const s = new Date(now);
+      s.setMonth(now.getMonth() - 12);
+      return { start: s.toISOString(), end };
+    }
+  }
+}
+
 export function TransactionsListScreen() {
   const { palette } = useTheme();
   const params = useLocalSearchParams<{ categoryId?: string; search?: string }>();
@@ -20,6 +68,7 @@ export function TransactionsListScreen() {
   const [kind, setKind] = useState<TransactionKind | 'all'>('all');
   const [paymentMode, setPaymentMode] = useState<PaymentMode | null>(null);
   const [categoryId, setCategoryId] = useState<string | null>(params.categoryId ?? null);
+  const [datePreset, setDatePreset] = useState<DatePreset>('year');
 
   // Tab screens stay mounted — params update reactively but useState initializers
   // only run once, so we sync incoming params into local state on each change.
@@ -30,11 +79,8 @@ export function TransactionsListScreen() {
   useEffect(() => {
     if (params.search !== undefined) setSearch(params.search || '');
   }, [params.search]);
-  const range = useMemo(() => {
-    const start = new Date();
-    start.setMonth(start.getMonth() - 12);
-    return { start: start.toISOString(), end: new Date().toISOString() };
-  }, []);
+
+  const range = useMemo(() => getPresetRange(datePreset), [datePreset]);
 
   const { data, isLoading, error } = useTransactionsInRange({
     start: range.start,
@@ -54,6 +100,8 @@ export function TransactionsListScreen() {
 
   const grouped = useMemo(() => groupByDay(data ?? []), [data]);
 
+  const filterCount = activeCount(kind, paymentMode, categoryId, datePreset);
+
   return (
     <Screen padded={false}>
       <View style={styles.header}>
@@ -68,11 +116,11 @@ export function TransactionsListScreen() {
         />
         <View style={styles.filterRow}>
           <Button
-            label={`Filters${activeCount(kind, paymentMode, categoryId) ? ' · ' + activeCount(kind, paymentMode, categoryId) : ''}`}
+            label={`Filters${filterCount ? ' · ' + filterCount : ''}`}
             variant="secondary"
             onPress={() => setFilterOpen(true)}
           />
-          {(kind !== 'all' || paymentMode || categoryId) && (
+          {filterCount > 0 && (
             <Button
               label="Clear"
               variant="ghost"
@@ -80,6 +128,7 @@ export function TransactionsListScreen() {
                 setKind('all');
                 setPaymentMode(null);
                 setCategoryId(null);
+                setDatePreset('year');
               }}
             />
           )}
@@ -101,7 +150,7 @@ export function TransactionsListScreen() {
       {!isLoading && (data?.length ?? 0) === 0 && (
         <Card style={styles.statusCard}>
           <ThemedText variant="bodyBase" tone="muted">
-            {search ? 'No transactions match your search.' : 'No transactions yet — tap “Add” to log your first one.'}
+            {search ? 'No transactions match your search.' : 'No transactions yet — tap "Add" to log your first one.'}
           </ThemedText>
         </Card>
       )}
@@ -135,6 +184,28 @@ export function TransactionsListScreen() {
         <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}>
             <ThemedText variant="headlineMd">Filters</ThemedText>
+
+            <ThemedText variant="labelCaps" tone="muted">DATE RANGE</ThemedText>
+            <View style={styles.chipWrap}>
+              {DATE_PRESETS.map((p) => (
+                <Pressable
+                  key={p.value}
+                  onPress={() => setDatePreset(p.value)}
+                  style={[
+                    styles.chip,
+                    { borderColor: palette.outlineVariant, backgroundColor: palette.surfaceContainerLowest },
+                    datePreset === p.value && { backgroundColor: palette.primaryContainer, borderColor: palette.primaryContainer },
+                  ]}
+                >
+                  <ThemedText
+                    variant="bodySm"
+                    style={{ color: datePreset === p.value ? palette.onPrimary : palette.onSurface, fontWeight: datePreset === p.value ? '600' : '400' }}
+                  >
+                    {p.label}
+                  </ThemedText>
+                </Pressable>
+              ))}
+            </View>
 
             <ThemedText variant="labelCaps" tone="muted">KIND</ThemedText>
             <View style={{ flexDirection: 'row', gap: spacing.sm }}>
@@ -179,7 +250,9 @@ function groupByDay(rows: TransactionRow[]) {
   const groups = new Map<string, { day: string; label: string; items: TransactionRow[]; netPaise: number }>();
   for (const r of rows) {
     const d = fromISO(r.occurredAt);
-    const day = d.toISOString().slice(0, 10);
+    // Use local date components so IST midnight-crossings don't split the same
+    // calendar day into two UTC-keyed groups.
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const label = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
     const g = groups.get(day) ?? { day, label, items: [], netPaise: 0 };
     g.items.push(r);
@@ -193,8 +266,9 @@ function activeCount(
   kind: TransactionKind | 'all',
   paymentMode: PaymentMode | null,
   categoryId: string | null,
+  datePreset: DatePreset,
 ): number {
-  return (kind !== 'all' ? 1 : 0) + (paymentMode ? 1 : 0) + (categoryId ? 1 : 0);
+  return (kind !== 'all' ? 1 : 0) + (paymentMode ? 1 : 0) + (categoryId ? 1 : 0) + (datePreset !== 'year' ? 1 : 0);
 }
 
 const styles = StyleSheet.create({
@@ -214,6 +288,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radius.lg,
     maxHeight: '90%',
   },
+  chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     paddingHorizontal: spacing.md,
     minHeight: 40,

@@ -4,9 +4,9 @@ import { radius, spacing, typography } from '@/theme/tokens';
 import { useTheme } from '@/features/theme/themeStore';
 
 const KEYS: (string | 'BACK' | '.')[] = [
-  '1', '2', '3',
-  '4', '5', '6',
   '7', '8', '9',
+  '4', '5', '6',
+  '1', '2', '3',
   '.', '0', 'BACK',
 ];
 
@@ -36,6 +36,10 @@ export function AmountKeypad({ value, onChange }: Props) {
 
   return (
     <View style={styles.grid}>
+      {/* Add a title*/}
+      <ThemedText variant="bodySm" tone="muted" style={{ color: palette.onSurface }}>
+        AMOUNT (tap numbers to edit)
+      </ThemedText>
       {KEYS.map((k) => (
         <Pressable
           key={k}
@@ -61,7 +65,7 @@ export function AmountKeypad({ value, onChange }: Props) {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.sm, columnGap: spacing.sm },
   key: {
-    width: '31%',
+    width: '30%',
     aspectRatio: 2.4,
     alignItems: 'center',
     justifyContent: 'center',
