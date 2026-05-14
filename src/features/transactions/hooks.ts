@@ -12,6 +12,18 @@ export const txnKeys = {
   sumByCategory: (start: string, end: string) =>
     ['transactions', 'sumByCategory', start, end] as const,
   recentMerchants: () => ['transactions', 'recentMerchants'] as const,
+  totalsInRange: (start: string, end: string) =>
+    ['transactions', 'totalsInRange', start, end] as const,
+  sumByPaymentMode: (start: string, end: string) =>
+    ['transactions', 'sumByPaymentMode', start, end] as const,
+  dailyTotals: (start: string, end: string) =>
+    ['transactions', 'dailyTotals', start, end] as const,
+  sumByWeekday: (start: string, end: string) =>
+    ['transactions', 'sumByWeekday', start, end] as const,
+  monthlyTotalsRange: (start: string, end: string) =>
+    ['transactions', 'monthlyTotalsRange', start, end] as const,
+  topMerchants: (start: string, end: string, limit: number) =>
+    ['transactions', 'topMerchants', start, end, limit] as const,
 };
 
 export function useTransactionsInRange(args: {
@@ -59,6 +71,48 @@ export function useRecentMerchants() {
   return useQuery({
     queryKey: txnKeys.recentMerchants(),
     queryFn: () => TransactionRepo.recentMerchants(),
+  });
+}
+
+export function useTotalsInRange(start: string, end: string) {
+  return useQuery({
+    queryKey: txnKeys.totalsInRange(start, end),
+    queryFn: () => TransactionRepo.totalsInRange(start, end),
+  });
+}
+
+export function useSumByPaymentMode(start: string, end: string) {
+  return useQuery({
+    queryKey: txnKeys.sumByPaymentMode(start, end),
+    queryFn: () => TransactionRepo.sumByPaymentMode(start, end),
+  });
+}
+
+export function useDailyTotals(start: string, end: string) {
+  return useQuery({
+    queryKey: txnKeys.dailyTotals(start, end),
+    queryFn: () => TransactionRepo.dailyTotals(start, end),
+  });
+}
+
+export function useSumByWeekday(start: string, end: string) {
+  return useQuery({
+    queryKey: txnKeys.sumByWeekday(start, end),
+    queryFn: () => TransactionRepo.sumByWeekday(start, end),
+  });
+}
+
+export function useMonthlyTotalsInRange(start: string, end: string) {
+  return useQuery({
+    queryKey: txnKeys.monthlyTotalsRange(start, end),
+    queryFn: () => TransactionRepo.monthlyTotalsInRange(start, end),
+  });
+}
+
+export function useTopMerchants(start: string, end: string, limit = 8) {
+  return useQuery({
+    queryKey: txnKeys.topMerchants(start, end, limit),
+    queryFn: () => TransactionRepo.topMerchants(start, end, limit),
   });
 }
 
