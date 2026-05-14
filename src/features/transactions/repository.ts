@@ -339,6 +339,134 @@ export async function monthlyTotals(
   }));
 }
 
+export async function monthlyTotalsInRange(
+  start: string,
+  end: string,
+): Promise<{ month: string; expensePaise: number; incomePaise: number }[]> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<{ month: string; expense: number; income: number }>(
+    `SELECT strftime('%Y-%m', occurred_at) AS month,
+            SUM(CASE WHEN kind='expense' THEN amount_paise ELSE 0 END) AS expense,
+            SUM(CASE WHEN kind='income' THEN amount_paise ELSE 0 END) AS income
+     FROM transactions
+     WHERE deleted_at IS NULL
+       AND occurred_at >= ? AND occurred_at <= ?
+     GROUP BY month
+     ORDER BY month ASC`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    month: r.month,
+    expensePaise: r.expense ?? 0,
+    incomePaise: r.income ?? 0,
+  }));
+}
+
+export interface RangeTotals {
+  incomePaise: number;
+  expensePaise: number;
+  expenseCount: number;
+  incomeCount: number;
+  largestExpensePaise: number;
+}
+
+export async function totalsInRange(start: string, end: string): Promise<RangeTotals> {
+  const db = await getDb();
+  const r = await db.getFirstAsync<{
+    income: number | null;
+    expense: number | null;
+    expense_count: number | null;
+    income_count: number | null;
+    largest_expense: number | null;
+  }>(
+    `SELECT
+       SUM(CASE WHEN kind='income' THEN amount_paise ELSE 0 END) AS income,
+       SUM(CASE WHEN kind='expense' THEN amount_paise ELSE 0 END) AS expense,
+       SUM(CASE WHEN kind='expense' THEN 1 ELSE 0 END) AS expense_count,
+       SUM(CASE WHEN kind='income' THEN 1 ELSE 0 END) AS income_count,
+       MAX(CASE WHEN kind='expense' THEN amount_paise ELSE 0 END) AS largest_expense
+     FROM transactions
+     WHERE deleted_at IS NULL
+       AND occurred_at >= ? AND occurred_at <= ?`,
+    [start, end],
+  );
+  return {
+    incomePaise: r?.income ?? 0,
+    expensePaise: r?.expense ?? 0,
+    expenseCount: r?.expense_count ?? 0,
+    incomeCount: r?.income_count ?? 0,
+    largestExpensePaise: r?.largest_expense ?? 0,
+  };
+}
+
+export async function sumByPaymentMode(
+  start: string,
+  end: string,
+): Promise<{ paymentMode: PaymentMode; totalPaise: number; count: number }[]> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<{ payment_mode: PaymentMode; total: number; count: number }>(
+    `SELECT payment_mode, SUM(amount_paise) AS total, COUNT(*) AS count
+     FROM transactions
+     WHERE deleted_at IS NULL AND kind='expense'
+       AND occurred_at >= ? AND occurred_at <= ?
+     GROUP BY payment_mode
+     ORDER BY total DESC`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    paymentMode: r.payment_mode,
+    totalPaise: r.total ?? 0,
+    count: r.count ?? 0,
+  }));
+}
+
+export async function dailyTotals(
+  start: string,
+  end: string,
+): Promise<{ day: string; expensePaise: number; incomePaise: number }[]> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<{ day: string; expense: number; income: number }>(
+    `SELECT strftime('%Y-%m-%d', occurred_at) AS day,
+            SUM(CASE WHEN kind='expense' THEN amount_paise ELSE 0 END) AS expense,
+            SUM(CASE WHEN kind='income' THEN amount_paise ELSE 0 END) AS income
+     FROM transactions
+     WHERE deleted_at IS NULL
+       AND occurred_at >= ? AND occurred_at <= ?
+     GROUP BY day
+     ORDER BY day ASC`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    day: r.day,
+    expensePaise: r.expense ?? 0,
+    incomePaise: r.income ?? 0,
+  }));
+}
+
+export async function sumByWeekday(
+  start: string,
+  end: string,
+): Promise<{ weekday: number; totalPaise: number; count: number }[]> {
+  const db = await getDb();
+  // strftime('%w', date) returns weekday: 0=Sunday..6=Saturday
+  const rows = await db.getAllAsync<{ weekday: string; total: number; count: number }>(
+    `SELECT strftime('%w', occurred_at) AS weekday,
+            SUM(amount_paise) AS total,
+            COUNT(*) AS count
+     FROM transactions
+     WHERE deleted_at IS NULL AND kind='expense'
+       AND occurred_at >= ? AND occurred_at <= ?
+     GROUP BY weekday
+     ORDER BY weekday ASC`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    weekday: Number(r.weekday),
+    totalPaise: r.total ?? 0,
+    count: r.count ?? 0,
+  }));
+}
+
 // Test/dev only: hard delete all rows.
 export async function _truncateForTests(db: SQLiteDatabase): Promise<void> {
   await db.runAsync('DELETE FROM transactions');
